@@ -87,6 +87,24 @@ function ContentReview({ companyId }: ContentReviewProps) {
     }
   };
 
+  const handleCopyPrompt = async () => {
+    if (!prompt) return;
+    try {
+      await navigator.clipboard.writeText(prompt);
+    } catch (error) {
+      console.error('Error copying prompt to clipboard:', error);
+    }
+  };
+
+  const handleCopyCaption = async () => {
+    if (!caption) return;
+    try {
+      await navigator.clipboard.writeText(caption);
+    } catch (error) {
+      console.error('Error copying caption to clipboard:', error);
+    }
+  };
+
   if (!contentData) {
     return (
       <div className="cr-wrapper">
@@ -117,12 +135,22 @@ function ContentReview({ companyId }: ContentReviewProps) {
           <div className="cr-editor-section">
             <div className="cr-editor-header">
               <h3>Content Prompt</h3>
-              <button
-                className="btn btn-secondary btn-small"
-                onClick={() => setEditingPrompt(!editingPrompt)}
-              >
-                {editingPrompt ? 'Cancel' : 'Edit'}
-              </button>
+              <div className="cr-editor-actions">
+                <button
+                  className="btn btn-secondary btn-small"
+                  onClick={() => setEditingPrompt(!editingPrompt)}
+                >
+                  {editingPrompt ? 'Cancel' : 'Edit'}
+                </button>
+                <button
+                  className="btn btn-secondary btn-small"
+                  type="button"
+                  onClick={handleCopyPrompt}
+                  disabled={!prompt}
+                >
+                  Copy
+                </button>
+              </div>
             </div>
             {editingPrompt ? (
               <textarea
@@ -142,12 +170,22 @@ function ContentReview({ companyId }: ContentReviewProps) {
           <div className="cr-editor-section">
             <div className="cr-editor-header">
               <h3>Caption</h3>
-              <button
-                className="btn btn-secondary btn-small"
-                onClick={() => setEditingCaption(!editingCaption)}
-              >
-                {editingCaption ? 'Cancel' : 'Edit'}
-              </button>
+              <div className="cr-editor-actions">
+                <button
+                  className="btn btn-secondary btn-small"
+                  onClick={() => setEditingCaption(!editingCaption)}
+                >
+                  {editingCaption ? 'Cancel' : 'Edit'}
+                </button>
+                <button
+                  className="btn btn-secondary btn-small"
+                  type="button"
+                  onClick={handleCopyCaption}
+                  disabled={!caption}
+                >
+                  Copy
+                </button>
+              </div>
             </div>
             {editingCaption ? (
               <textarea

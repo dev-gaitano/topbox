@@ -600,13 +600,16 @@ def analyze_images_route() -> tuple[Response, int]:
     if not img_urls:
         return jsonify({"success": False, "message": "No image URLs provided"}), 400
 
-    # Analyze each image
-    img_analysis: dict = analyze_images(img_urls)
+    # Analyze each image individually so we return one analysis per URL
+    analyses: list[dict] = []
+    for url in img_urls:
+        single_analysis: dict = analyze_images([url])
+        analyses.append(single_analysis)
 
     return jsonify({
         "success": True,
         "message": "Images analyzed successfully",
-        "analyses": img_analysis
+        "analyses": analyses
     }), 200
 
 
@@ -647,7 +650,8 @@ def create_content() -> tuple[Response, int]:
         caption_data = generate_post_caption(
             brand_guidelines=brand_guidelines,
             post_topic=topic,
-            platform=platform
+            platform=platform,
+            image_analysis=analyses,
         )
 
         # Check if caption was generated successfully
