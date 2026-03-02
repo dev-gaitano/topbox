@@ -1,8 +1,10 @@
-import { useState } from 'react';
 import './BrandGuidelines.css';
+
+import { useState } from 'react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
+// Import company ID from props
 interface BrandGuidelinesProps {
   companyId: number;
 }
@@ -13,15 +15,19 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
   const [uploading, setUploading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string>('');
+  const [generatedProfile, setGeneratedProfile] = useState<any | null>(null);
   const [viewedContent, setViewedContent] = useState<string | null>(null);
+  const [viewedProfile, setViewedProfile] = useState<any | null>(null);
 
   const handleViewMode = async () => {
     setUploadMode('view');
     setViewedContent(null); // reset to loading state
+    setViewedProfile(null);
     try {
       const res = await fetch(`${API_BASE}/api/brand-guidelines/${companyId}`);
       const data = await res.json();
       setViewedContent(data.content ?? null);
+      setViewedProfile(data.profile ?? null);
     } catch {
       setViewedContent(null);
     }
@@ -101,6 +107,7 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
         const content = data.content || data.guidelines || '';
         if (content) {
           setGeneratedContent(content);
+          setGeneratedProfile(data.profile ?? null);
           alert('Brand guidelines generated successfully!');
         } else {
           console.error('No content in response:', data);
@@ -227,6 +234,19 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
               <div className="bg-content-preview" style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '4px', maxHeight: '500px', overflowY: 'auto', fontFamily: 'monospace', fontSize: '14px', lineHeight: '1.6' }}>
                 {generatedContent}
               </div>
+              {generatedProfile && Array.isArray(generatedProfile.color_palette) && (
+                <div style={{ marginTop: 12 }}>
+                  <h4>Color Palette</h4>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    {generatedProfile.color_palette.map((hex: string, i: number) => (
+                      <div key={i} style={{ textAlign: 'center' }}>
+                        <div style={{ width: 48, height: 48, backgroundColor: hex, borderRadius: 4, border: '1px solid #ddd' }} />
+                        <div style={{ fontSize: 12, marginTop: 6 }}>{hex}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <button
                 className="btn btn-secondary"
                 onClick={() => {
