@@ -43,17 +43,72 @@ post_image_prompt_gen_agent = create_agent(
 
 # Generate post caption
 def generate_post_caption(
-    brand_guidelines: str, post_topic: str, platform: str
+    brand_guidelines: str,
+    post_topic: str,
+    platform: str,
+    image_analysis: dict | list | None = None,
 ) -> dict:
     try:
+        # Build a human-readable summary of the reference image analyses
+        analysis_snippet = ""
+        if image_analysis:
+            try:
+                if isinstance(image_analysis, list):
+                    summary_parts: list[str] = []
+                    for idx, item in enumerate(image_analysis, start=1):
+                        if not isinstance(item, dict):
+                            continue
+                        meta = item.get("metadata", {}) or {}
+                        color_profile = item.get("color_profile", {}) or {}
+                        lighting = item.get("lighting", {}) or {}
+                        artistic = item.get("artistic_elements", {}) or {}
+                        summary_parts.append(
+                            f"Image {idx}: type={meta.get('image_type')}, "
+                            f"purpose={meta.get('primary_purpose')}, "
+                            f"palette={color_profile.get('color_palette')}, "
+                            f"lighting_mood={lighting.get('mood')}, "
+                            f"light_temperature={lighting.get('light_temperature')}, "
+                            f"style={artistic.get('visual_style')}, "
+                            f"atmosphere={artistic.get('atmosphere')}."
+                        )
+                    analysis_snippet = "\n".join(summary_parts)
+                elif isinstance(image_analysis, dict):
+                    meta = image_analysis.get("metadata", {}) or {}
+                    color_profile = image_analysis.get("color_profile", {}) or {}
+                    lighting = image_analysis.get("lighting", {}) or {}
+                    artistic = image_analysis.get("artistic_elements", {}) or {}
+                    analysis_snippet = (
+                        "Single reference image: "
+                        f"type={meta.get('image_type')}, "
+                        f"purpose={meta.get('primary_purpose')}, "
+                        f"palette={color_profile.get('color_palette')}, "
+                        f"lighting_mood={lighting.get('mood')}, "
+                        f"light_temperature={lighting.get('light_temperature')}, "
+                        f"style={artistic.get('visual_style')}, "
+                        f"atmosphere={artistic.get('atmosphere')}."
+                    )
+            except Exception:
+                analysis_snippet = ""
+
         # Invoke the agent
         response = post_caption_gen_agent.invoke({
             "messages": [
                 {
                     "role": "user",
                     "content": f"""
-                        Use this information to create suitable content
-                        {brand_guidelines},\n{platform},\n{post_topic}
+                        Use this information to create suitable social media content.
+
+                        Brand guidelines:
+                        {brand_guidelines}
+
+                        Platform:
+                        {platform}
+
+                        Post topic:
+                        {post_topic}
+
+                        Reference image analysis (use this to align the caption with the visual style, subjects, mood, and composition of the images):
+                        {analysis_snippet}
                     """
                 }
             ]
@@ -65,9 +120,9 @@ def generate_post_caption(
     except Exception as e:
         print("Error generating post caption")
         return {
-            "success" : False,
-            "message" : "Error generating post caption",
-            "error" : str(e)
+            "success": False,
+            "message": "Error generating post caption",
+            "error": str(e)
         }
 
 
@@ -129,8 +184,19 @@ def generate_post_image_prompt(
                 {
                     "role": "user",
                     "content": f"""
-                        Use this information into consideration to create suitable content
-                        {brand_guidelines},\n{image_analysis},\n{caption_text},\n{industry}
+                        Use the following information to create a DALL-E image prompt that matches the visual style and subjects of the reference images.
+
+                        Brand guidelines:
+                        {brand_guidelines}
+
+                        Platform industry:
+                        {industry}
+
+                        Generated caption text:
+                        {caption_text}
+
+                        Reference image analysis (this describes the composition, color palette, lighting, technical style, mood, and subject details of each reference image; base the new image on this style so it looks like it came from the same shoot):
+                        {image_analysis}
                     """
                 }
             ]

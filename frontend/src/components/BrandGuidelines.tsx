@@ -1,8 +1,10 @@
-import { useState } from 'react';
 import './BrandGuidelines.css';
+
+import { useState } from 'react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
+// Import company ID from props
 interface BrandGuidelinesProps {
   companyId: number;
 }
@@ -13,15 +15,19 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
   const [uploading, setUploading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string>('');
+  const [generatedProfile, setGeneratedProfile] = useState<any | null>(null);
   const [viewedContent, setViewedContent] = useState<string | null>(null);
+  const [viewedProfile, setViewedProfile] = useState<any | null>(null);
 
   const handleViewMode = async () => {
     setUploadMode('view');
     setViewedContent(null); // reset to loading state
+    setViewedProfile(null);
     try {
       const res = await fetch(`${API_BASE}/api/brand-guidelines/${companyId}`);
       const data = await res.json();
       setViewedContent(data.content ?? null);
+      setViewedProfile(data.profile ?? null);
     } catch {
       setViewedContent(null);
     }
@@ -101,6 +107,7 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
         const content = data.content || data.guidelines || '';
         if (content) {
           setGeneratedContent(content);
+          setGeneratedProfile(data.profile ?? null);
           alert('Brand guidelines generated successfully!');
         } else {
           console.error('No content in response:', data);
@@ -126,24 +133,24 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
   };
 
   return (
-    <div className="brand-guidelines">
+    <div className="bg-wrapper">
       <h1>Brand Guidelines</h1>
 
-      <div className="mode-selector">
+      <div className="bg-mode-selector">
         <button
-          className={`mode-btn ${uploadMode === 'upload' ? 'active' : ''}`}
+          className={`bg-mode-btn ${uploadMode === 'upload' ? 'active' : ''}`}
           onClick={() => setUploadMode('upload')}
         >
           Upload Guidelines
         </button>
         <button
-          className={`mode-btn ${uploadMode === 'generate' ? 'active' : ''}`}
+          className={`bg-mode-btn ${uploadMode === 'generate' ? 'active' : ''}`}
           onClick={() => setUploadMode('generate')}
         >
           Generate Guidelines
         </button>
         <button
-          className={`mode-btn ${uploadMode === 'view' ? 'active' : ''}`}
+          className={`bg-mode-btn ${uploadMode === 'view' ? 'active' : ''}`}
           onClick={handleViewMode}
         >
           View Guidelines
@@ -151,11 +158,11 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
       </div>
 
       {uploadMode === 'upload' ? (
-        <div className="upload-section">
+        <div className="bg-upload-section">
           <form onSubmit={handleUpload} className="upload-form">
             <div className="form-group">
               <label htmlFor="fileUpload">Upload Brand Guidelines File</label>
-              <div className="upload-row">
+              <div className="bg-upload-row">
                 <input
                   id="fileUpload"
                   type="file"
@@ -172,26 +179,41 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
                 </button>
               </div>
               {uploadedFile && (
-                <p className="file-info">Selected: {uploadedFile.name}</p>
+                <p className="bg-file-info">Selected: {uploadedFile.name}</p>
               )}
             </div>
           </form>
         </div>
       ) : uploadMode === 'view' ? (
-        <div className="view-section">
+        <div className="bg-view-section">
           {viewedContent === undefined ? (
             <p>Loading...</p>
           ) : viewedContent === null ? (
             <p>No brand guidelines have been saved for this company yet.</p>
           ) : (
-            <div className="content-preview" style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '4px', maxHeight: '500px', overflowY: 'auto', fontFamily: 'monospace', fontSize: '14px', lineHeight: '1.6' }}>
-              {viewedContent}
+            <div>
+              <div className="bg-content-preview" style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '4px', maxHeight: '500px', overflowY: 'auto', fontFamily: 'monospace', fontSize: '14px', lineHeight: '1.6' }}>
+                {viewedContent}
+              </div>
+              {viewedProfile && Array.isArray(viewedProfile.color_palette) && (
+                <div style={{ marginTop: 12 }}>
+                  <h4>Color Palette</h4>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    {viewedProfile.color_palette.map((hex: string, i: number) => (
+                      <div key={i} style={{ textAlign: 'center' }}>
+                        <div style={{ width: 48, height: 48, backgroundColor: hex, borderRadius: 4, border: '1px solid #ddd' }} />
+                        <div style={{ fontSize: 12, marginTop: 6 }}>{hex}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
       ) : (
-        <div className="generate-section">
-          <form onSubmit={handleGenerate} className="generate-form">
+        <div className="bg-generate-section">
+          <form onSubmit={handleGenerate} className="bg-generate-form">
             <div className="form-group">
               <p>
                 Click the button to auto-generate brand guidelines for this company.
@@ -207,11 +229,24 @@ function BrandGuidelines({ companyId }: BrandGuidelinesProps) {
           </form>
 
           {generatedContent && (
-            <div className="generated-content">
+            <div className="bg-generated-content">
               <h3>Generated Brand Guidelines</h3>
-              <div className="content-preview" style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '4px', maxHeight: '500px', overflowY: 'auto', fontFamily: 'monospace', fontSize: '14px', lineHeight: '1.6' }}>
+              <div className="bg-content-preview" style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '4px', maxHeight: '500px', overflowY: 'auto', fontFamily: 'monospace', fontSize: '14px', lineHeight: '1.6' }}>
                 {generatedContent}
               </div>
+              {generatedProfile && Array.isArray(generatedProfile.color_palette) && (
+                <div style={{ marginTop: 12 }}>
+                  <h4>Color Palette</h4>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    {generatedProfile.color_palette.map((hex: string, i: number) => (
+                      <div key={i} style={{ textAlign: 'center' }}>
+                        <div style={{ width: 48, height: 48, backgroundColor: hex, borderRadius: 4, border: '1px solid #ddd' }} />
+                        <div style={{ fontSize: 12, marginTop: 6 }}>{hex}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <button
                 className="btn btn-secondary"
                 onClick={() => {
