@@ -5,6 +5,7 @@ import { useState } from 'react';
 import CompanySelection from './components/CompanySelection';
 import BrandGuidelines from './components/BrandGuidelines';
 import ContentCreation from './components/ContentCreation';
+import ContentList from './components/ContentList';
 import ContentReview from './components/ContentReview';
 import Navigation from './components/Navigation';
 import NewCompanyForm from './components/NewCompanyForm';
@@ -44,6 +45,16 @@ function App() {
             <Route
               path="/companies/new"
               element={<NewCompanyForm onSuccess={setSelectedCompany} />}
+            />
+            <Route
+              path="/content"
+              element={
+                selectedCompany ? (
+                  <ContentList companyId={selectedCompany.id} companyName={selectedCompany.name} />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
             />
             <Route
               path="/content/review"
