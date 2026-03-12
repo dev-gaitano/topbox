@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ContentReview.css';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 interface ContentReviewProps {
   companyId: number;
   pendingContent: any;
@@ -26,6 +28,8 @@ function ContentReview({ companyId, pendingContent }: ContentReviewProps) {
   const [prompt, setPrompt] = useState('');
   const [caption, setCaption] = useState('');
   const [saving, setSaving] = useState(false);
+  const [generatingImage, setGeneratingImage] = useState(false);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [copiedCaption, setCopiedCaption] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string>(
@@ -40,12 +44,47 @@ function ContentReview({ companyId, pendingContent }: ContentReviewProps) {
     setCaption(firstResult?.caption ?? pendingContent.caption ?? '');
   }, [pendingContent]);
 
+  const safeJson = async (res: Response) => {
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      throw new Error(`Non-JSON response from ${res.url} (${res.status}): ${text.slice(0, 200)}`);
+    }
+  };
+
+  const handleGenerateImage = async () => {
+    if (!prompt) return;
+
+    try {
+      setGeneratingImage(true);
+      setGeneratedImageUrl(null);
+      const response = await fetch(`${API_BASE}/api/content/generate-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await safeJson(response);
+      if (response.ok && data.url) {
+        setGeneratedImageUrl(data.url);
+      } else {
+        alert(data.message || 'Failed to generate image');
+      }
+    } catch (error) {
+      console.error('Error generating image:', error);
+      alert(`Error generating image: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!contentData) return;
 
     try {
       setSaving(true);
-      const response = await fetch('/api/content/save', {
+      const response = await fetch(`${API_BASE}/api/content/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,7 +211,19 @@ function ContentReview({ companyId, pendingContent }: ContentReviewProps) {
                 {prompt || <span className="cr-placeholder">No prompt generated</span>}
               </div>
             )}
-            <button id="cr-generate-img-btn" className="btn btn-primary">Generate Image</button>
+            <button
+              id="cr-generate-img-btn"
+              className="btn btn-primary"
+              onClick={handleGenerateImage}
+              disabled={generatingImage || !prompt}
+            >
+              {generatingImage ? 'Generating...' : 'Generate Image'}
+            </button>
+            {generatedImageUrl && (
+              <div className="cr-generated-image">
+                <img src={generatedImageUrl} alt="Generated" style={{ maxWidth: '50%', borderRadius: '4px', marginTop: '12px' }} />
+              </div>
+            )}
           </div>
 
           <div className="cr-editor-section">

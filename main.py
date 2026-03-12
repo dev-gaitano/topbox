@@ -885,6 +885,31 @@ def save_content() -> tuple[Response, int]:
         if conn: conn.close()
 
 
+# =====================================================
+# GENERATE IMAGE
+# =====================================================
+@app.route("/api/content/generate-image", methods=["POST"])
+def generate_image_route() -> tuple[Response, int]:
+    try:
+        data = request.get_json(silent=True) or {}
+        prompt = (data.get("prompt") or "").strip()
+        size = (data.get("size") or "1024x1024").strip()
+
+        if not prompt:
+            return jsonify({"success": False, "message": "Missing prompt"}), 400
+
+        image_url = generate_image(prompt, size)
+
+        if image_url.startswith("Error"):
+            return jsonify({"success": False, "message": image_url}), 500
+
+        return jsonify({"success": True, "url": image_url}), 200
+
+    except Exception as e:
+        print(traceback.format_exc())
+        return jsonify({"success": False, "message": "Failed to generate image", "error": str(e)}), 500
+
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5000"))
     app.run(host="0.0.0.0", port=port, debug=False)
