@@ -12,6 +12,8 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 function ContentCreation({ companyId, onGenerated }: ContentCreationProps) {
   const [topic, setTopic] = useState('');
   const [platforms, setPlatforms] = useState<Platform[]>(['instagram']);
+  const [aspectRatio, setAspectRatio] = useState('16:9');
+  const [imageType, setImageType] = useState('Poster');
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -89,6 +91,8 @@ function ContentCreation({ companyId, onGenerated }: ContentCreationProps) {
           platform: platforms[0],
           platforms,
           analyses: analyzeData.analyses,
+          aspectRatio,
+          imageType,
         }),
       });
       const createData = await safeJson(createRes);
@@ -164,6 +168,35 @@ function ContentCreation({ companyId, onGenerated }: ContentCreationProps) {
               })}
             </div>
           </div>
+          <div className="cc-bottom">
+            <div className="cc-aspect-ratio">
+              <span className="cc-info-label">Aspect Ratio:</span>
+              <select
+                className="cc-ar-select"
+                value={aspectRatio}
+                onChange={e => setAspectRatio(e.target.value)}
+                disabled={submitting}
+              >
+                <option>16:9</option>
+                <option>9:16</option>
+                <option>1:1</option>
+              </select>
+            </div>
+
+            <div className="cc-aspect-ratio">
+              <span className="cc-info-label">Image Type:</span>
+              <select
+                className="cc-ar-select"
+                value={imageType}
+                onChange={e => setImageType(e.target.value)}
+                disabled={submitting}
+              >
+                <option>Poster</option>
+                <option>Advertisment</option>
+                <option>Editorial</option>
+              </select>
+            </div>
+          </div>
 
           <button
             type="submit"
@@ -173,7 +206,6 @@ function ContentCreation({ companyId, onGenerated }: ContentCreationProps) {
           >
             {submitting ? (
               <span className="cc-btn-inner">
-                <span className="cc-spinner" />
                 {status}
               </span>
             ) : 'Generate Prompt'}
