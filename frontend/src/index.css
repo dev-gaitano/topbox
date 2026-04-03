@@ -6,7 +6,6 @@
   box-sizing: border-box;
 }
 
-
 :root {
   --background: hsla(207, 73%, 3%, 1);
   --primary: hsla(16, 100%, 56%, 1);
@@ -16,13 +15,31 @@
   --text-more-muted: hsla(0, 0%, 67%, 1);
 }
 
+h1,
+h2 {
+  color: var(--text);
+}
+
 .root-container {
   background-color: var(--primary);
   background-image:
     radial-gradient(ellipse 100% 30% at 44% -3%, var(--background) 0% 15%, var(--secondary) 35%, transparent 55%),
     radial-gradient(circle at 70% 80%, var(--background) 0% 30%, var(--secondary) 50%, transparent 65%);
-  height: 280vh;
+  /*height: 280vh;*/
   min-height: 100vh;
   min-width: 100vw;
+  display: flex;
+  flex-direction: column;
   padding: 48px 40px;
+}
+
+.section {
+  border: solid 1px blue;
+  width: 100%;
+}
+
+.component {
+  border: solid 1px green;
+  width: 100%;
+  padding: 40px;
 }

@@ -1,24 +1,18 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Header from './components/Header/Header';
+import Main from './components/Main/Main';
+import Footer from './components/Footer/Footer';
 import { Analytics } from '@vercel/analytics/react'
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div className="root-container">
-              <header></header>
-              <main></main>
-              <footer></footer>
-            </div>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+    <div className="app">
+      <div className="root-container">
+        <Header />
+        <Main />
+        <Footer />
+      </div>
       <Analytics />
-    </Router>
+    </div>
   );
 }
 
