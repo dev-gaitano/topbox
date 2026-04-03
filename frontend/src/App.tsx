@@ -4,21 +4,20 @@ import { Analytics } from '@vercel/analytics/react'
 function App() {
   return (
     <Router>
-      <div className="app">
-        <main className="main-content">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                </>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-        <Analytics />
-      </div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div className="root-container">
+              <header></header>
+              <main></main>
+              <footer></footer>
+            </div>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Analytics />
     </Router>
   );
 }

@@ -5,3 +5,24 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+
+:root {
+  --background: hsla(207, 73%, 3%, 1);
+  --primary: hsla(16, 100%, 56%, 1);
+  --secondary: hsla(208, 29%, 41%, 1);
+  --text: hsla(0, 0%, 100%, 1);
+  --text-muted: hsla(0, 0%, 85%, 1);
+  --text-more-muted: hsla(0, 0%, 67%, 1);
+}
+
+.root-container {
+  background-color: var(--primary);
+  background-image:
+    radial-gradient(ellipse 100% 30% at 44% -3%, var(--background) 0% 15%, var(--secondary) 35%, transparent 55%),
+    radial-gradient(circle at 70% 80%, var(--background) 0% 30%, var(--secondary) 50%, transparent 65%);
+  height: 280vh;
+  min-height: 100vh;
+  min-width: 100vw;
+  padding: 48px 40px;
+}
