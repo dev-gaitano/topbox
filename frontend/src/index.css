@@ -48,6 +48,12 @@ p {
 
 button {
   border: none;
+  height: 80px;
+  width: 100%;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .root-container {
@@ -92,6 +98,7 @@ button {
   background-color: var(--text-muted);
   border-radius: 0 16px 16px 0;
   flex-grow: 1;
+  width: 100%;
 }
 
 .btn-secondary {

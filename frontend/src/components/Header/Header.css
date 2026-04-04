@@ -7,5 +7,7 @@
 }
 
 .user-profile {
+  height: 80px;
+  border-radius: 999px;
   width: 200px;
 }
