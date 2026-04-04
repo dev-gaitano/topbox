@@ -15,6 +15,7 @@
   --text: hsla(0, 0%, 100%, 1);
   --text-muted: hsla(0, 0%, 85%, 1);
   --text-more-muted: hsla(0, 0%, 67%, 1);
+  --text-disabled: hsla(0, 0%, 67%, 0.7);
 }
 
 body {
@@ -94,6 +95,7 @@ button {
   border-radius: 0 16px 16px 0;
   flex-grow: 1;
   width: 100%;
+  cursor: pointer;
 }
 
 .btn-primary {
@@ -109,15 +111,13 @@ button {
   backdrop-filter: brightness(1.1) blur(2px) url(#displacementFilter);
   position: relative;
   color: var(--text-muted);
-}
-
-.btn-primary p {
-  font-weight: 700;
+  cursor: pointer;
 }
 
 .btn-primary p {
   position: relative;
   z-index: 1;
+  font-weight: 700;
 }
 
 .btn-primary .arrow-outwards {
@@ -141,6 +141,12 @@ button {
   background-color: var(--text);
   height: 80px;
   border-radius: 999px;
+  color: var(--background);
+  cursor: pointer;
+}
+
+.btn-secondary p {
+  font-weight: 700;
 }
 
 .input-primary {

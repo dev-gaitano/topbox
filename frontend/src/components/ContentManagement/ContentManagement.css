@@ -6,7 +6,7 @@
 }
 
 .cm-selector {
-  border: solid 1px white;
+  border: solid 1px var(--text-disabled);
   border-radius: 999px;
   display: flex;
   justify-content: flex-start;
@@ -15,4 +15,9 @@
 
 .cm-selector button {
   width: 568px;
+}
+
+.cm-selector .inactive {
+  background: none;
+  color: var(--text-disabled);
 }

@@ -17,6 +17,7 @@
   filter: drop-shadow(-8px -10px 46px #0000005f);
   backdrop-filter: brightness(1.1) blur(2px) url(#displacementFilter);
   position: relative;
+  cursor: pointer;
 }
 
 .cs-add-new::before {
@@ -46,4 +47,5 @@
   justify-content: center;
   align-items: center;
   border-radius: 16px;
+  cursor: pointer;
 }
