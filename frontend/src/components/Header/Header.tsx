@@ -3,7 +3,10 @@ import "./Header.css"
 function Header() {
   return (
     <header className="section header-section">
-      <p className="random-symbols">&gt; |</p>
+      <div className="brand-container">
+        <p className="random-symbols">&gt; |</p>
+        <img className="logo-img" src="https://res.cloudinary.com/diwkfbsgv/image/upload/v1775206748/logo_u4sz9t.svg" />
+      </div>
       <div className="user-profile">
         <div className="user-content">
           <div className="user-details">

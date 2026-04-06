@@ -6,6 +6,16 @@
   padding: 0 40px;
 }
 
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-img {
+  height: 44px;
+}
+
 .user-profile {
   height: 64px;
   border-radius: 999px;
@@ -69,6 +79,10 @@
 @media (max-width: 767px) {
   .header-section {
     padding: 0 4px;
+  }
+
+  .logo-img {
+    height: 36px;
   }
 
   .user-profile {
