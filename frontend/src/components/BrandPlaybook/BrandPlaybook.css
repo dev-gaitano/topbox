@@ -91,7 +91,7 @@
 
   /* x-coords × 0.75, y-coords unchanged (height stays 301px) */
   .pb-upload-area {
-    clip-path: path("M 12,0 L 366,0 A 16,16 0,0,1 378,16 L 378,213 A 16,16 0,0,1 366,229 L 213,229 A 32,32 0,0,0 189,261 L 189,285 A 16,16 0,0,1 178,301 L 12,301 A 16,16 0,0,1 0,285 L 0,16 A 16,16 0,0,1 12,0 Z");
+    clip-path: path("M 12,0 L 366,0 A 16,16 0,0,1 378,16 L 378,213 A 16,16 0,0,1 366,229 L 216,229 A 32,32 0,0,0 184,261 L 184,285 A 16,16 0,0,1 168,301 L 12,301 A 16,16 0,0,1 0,285 L 0,16 A 16,16 0,0,1 12,0 Z");
   }
 
   .pb-upload-container .btn-primary {
@@ -161,6 +161,8 @@
 
   .pb-upload-container .btn-primary {
     width: 180px;
+    bottom: 16px;
+    right: 16px;
   }
 
   .pb-preview {
@@ -174,5 +176,7 @@
   .pb-preview-options {
     width: 140px;
     height: 48px;
+    top: 16px;
+    left: 16px;
   }
 }
