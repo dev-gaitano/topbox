@@ -18,6 +18,7 @@
   backdrop-filter: brightness(1.1) blur(2px) url(#displacementFilter);
   position: relative;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .cs-add-new::before {
@@ -36,7 +37,13 @@
 .cs-carousel {
   display: flex;
   gap: 16px;
-  overflow: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cs-carousel::-webkit-scrollbar {
+  display: none;
 }
 
 .cs-company-item {
@@ -48,4 +55,23 @@
   align-items: center;
   border-radius: 16px;
   cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .cs-add-new {
+    min-width: 80px;
+    min-height: 80px;
+  }
+
+  .cs-add-new svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .cs-company-item {
+    min-width: 130px;
+    min-height: 80px;
+  }
 }

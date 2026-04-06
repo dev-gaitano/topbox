@@ -30,7 +30,6 @@
     inset 0 0 8px 1px rgba(255, 255, 255, 0.7);
 }
 
-
 .user-content {
   display: flex;
   align-items: center;
@@ -57,4 +56,35 @@
   height: 100%;
   width: auto;
   border-radius: 999px;
+}
+
+/* ── Tablet ─────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .header-section {
+    padding: 0 16px;
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .header-section {
+    padding: 0 4px;
+  }
+
+  .user-profile {
+    height: 52px;
+  }
+
+  .user-content {
+    gap: 8px;
+    padding: 6px 6px 6px 16px;
+  }
+
+  .pfp-wrapper {
+    height: 40px;
+  }
+
+  .user-details p {
+    font-size: 12px;
+  }
 }
