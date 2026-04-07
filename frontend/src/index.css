@@ -102,6 +102,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 16px;
   flex-wrap: wrap;
   overflow: hidden;
   transition: opacity 0.26s ease-out;
@@ -133,6 +134,7 @@ button {
 
 .btn-primary .arrow-outwards {
   height: 24px;
+  width: 24px;
 }
 
 .btn-secondary {
@@ -170,15 +172,15 @@ button {
   border-radius: 999px;
 }
 
-/* ── Tablet ─────────────────────────────────────── */
+/* ── 1100px ────────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .root-container {
     padding: 16px;
   }
 }
 
-/* ── Mobile ─────────────────────────────────────── */
-@media (max-width: 767px) {
+/* ── 768px ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
   .root-container {
     padding: 12px;
   }

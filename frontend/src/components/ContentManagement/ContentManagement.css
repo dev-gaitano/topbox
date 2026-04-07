@@ -56,7 +56,22 @@
   }
 }
 
-/* ── Tablet: cm-selector leaves absolute flow, stack vertically ─────────── */
+/* ── 1280px ────────────────────────────────────────────────────────────── */
+@media (max-width: 1280px) {
+  .cm-saved-content {
+    width: 320px;
+  }
+
+  .cm-selector {
+    width: 656px;
+  }
+
+  .cm-selector button {
+    width: 320px;
+  }
+}
+
+/* ── 1100px: cm-selector leaves absolute flow, stack vertically ────────── */
 @media (max-width: 1100px) {
   .cm-container {
     flex-direction: column;
@@ -78,8 +93,8 @@
   }
 }
 
-/* ── Mobile ─────────────────────────────────────── */
-@media (max-width: 767px) {
+/* ── 768px ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
   .cm-saved-content {
     height: 160px;
   }
