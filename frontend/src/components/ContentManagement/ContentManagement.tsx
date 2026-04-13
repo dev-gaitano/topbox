@@ -1,8 +1,11 @@
 import "./ContentManagement.css"
+
+// Components
 import SingleContentCreation from "./SingleContentCreation"
 import RolloutContentCreation from "./RolloutContentCreation"
 import SavedContent from "./SavedContent"
 
+// Modules
 import { useState } from "react"
 
 function ContentManagement() {
