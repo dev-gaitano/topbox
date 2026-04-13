@@ -17,7 +17,6 @@
   width: 1024px;
   border-radius: 16px;
   display: flex;
-  justify-content: space-between;
   gap: 16px;
   position: absolute;
   top: 0;
@@ -26,6 +25,14 @@
 
 .cm-selector button {
   width: 504px;
+}
+
+.set-left {
+  justify-content: flex-start;
+}
+
+.set-right {
+  justify-content: flex-end;
 }
 
 .cm-selector .inactive {
@@ -100,12 +107,17 @@
   }
 
   .cm-selector {
-    flex-direction: column;
     gap: 8px;
     padding: 8px;
+    border-radius: 24px;
+    justify-content: flex-end;
   }
 
   .cm-selector button {
     width: 100%;
+  }
+
+  .scc-left {
+    order: 2;
   }
 }
