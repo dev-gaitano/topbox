@@ -142,8 +142,27 @@
 .pb-saved-content {
   width: 504px;
   height: 301px;
-  background-color: var(--text-muted);
   border-radius: 16px;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: opacity 0.26s ease-out;
+  filter: drop-shadow(-8px -10px 46px #0000005f);
+  backdrop-filter: brightness(1.1) blur(2px) url(#displacementFilter);
+  position: relative;
+  cursor: pointer;
+}
+
+.pb-saved-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  -webkit-box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7),
+    inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+  box-shadow: inset 6px 6px 0px -6px rgba(255, 255, 255, 0.7),
+    inset 0 0 8px 1px rgba(255, 255, 255, 0.7);
 }
 
 /* ── 1440px ──────────────────────────────────────────────────────────────
@@ -262,6 +281,10 @@
     border-radius: 48px;
   }
 
+  .pb-saved-content::before {
+    border-radius: 48px;
+  }
+
   .pb-upload-container {
     width: 100%;
     height: 220px;
@@ -307,6 +330,10 @@
 
   .pb-saved-content {
     height: 140px;
+    border-radius: 32px;
+  }
+
+  .pb-saved-content::before {
     border-radius: 32px;
   }
 
