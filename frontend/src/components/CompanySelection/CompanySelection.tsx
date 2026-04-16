@@ -11,6 +11,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 function CompanySelection({ selectedCompany, onSelectCompany }: CompanySelectionProps) {
   const [companies, setCompanies] = useState<Company[]>([])
 
+  // Fetch companies from api
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
