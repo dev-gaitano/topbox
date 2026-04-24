@@ -8,7 +8,7 @@ import io
 from pydantic import BaseModel, Field
 from langchain.agents import create_agent
 
-from agentSetup import model, BRAND_ANALYSIS_PROMPT, GUIDELINE_MERGING_PROMPT
+from agents.agentSetup import model, BRAND_ANALYSIS_PROMPT, GUIDELINE_MERGING_PROMPT
 
 
 # Setup environment files
