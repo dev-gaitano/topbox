@@ -16,29 +16,20 @@
 ### Installation
 
 ```bash
+# Setup backend
+cd backend
 python3 -m venv venv
-```
-
-```bash
 source venv/bin/activate
-```
-
-```bash
 pip install -r requirements.txt
-```
-
-```bash
 python3 main.py
 ```
 
 - API calls are configured to proxy to `http://localhost:5000`
 
 ```bash
+# Setup frontend
 cd frontend
 npm install
-```
-
-```bash
 npm run dev
 ```
 
@@ -47,6 +38,7 @@ The application will be available at `http://localhost:3000`
 ### Build
 
 ```bash
+cd frontend
 npm run build
 ```
 
@@ -76,33 +68,32 @@ The frontend expects the following Flask backend endpoints:
 ```
 .
 ├── .git/                               # Git metadata
-├── brandAgent.py                       # Brand-related logic
-├── contentAgent.py                     # Content-related logic
-├── databaseConnection.py               # Database connection and setup
-├── main.py                             # Backend entry point
-├── requirements.txt                    # Python dependencies
-├── schema.sql                          # Database schema
-├── Dockerfile                          # Container build instructions
 ├── README.md                           # Project documentation
-├── frontend/                           # React frontend
+├── backend/                            # Flask Backend
+│   ├── main.py                         # API entry point
+│   ├── databaseConnection.py           # Database connection and setup
+│   ├── requirements.txt                # Python deps
+│   ├── schema.sql                      # DB schema
+│   ├── Dockerfile                      # Backend container config
+│   ├── .env                            # Secrets (local)
+│   ├── credentials.json                # Google API key (local)
+│   └── agents/                         # AI Agent logic
+│       ├── agentSetup.py               # Shared AI config
+│       ├── brandAgent.py               # Brand analysis agent
+│       ├── contentAgent.py             # Content creation agent
+│       └── responseModels.py           # Pydantic models
+├── frontend/                           # React Frontend
 │   ├── index.html                      # HTML entry point
 │   ├── package.json                    # Frontend config and scripts
 │   ├── package-lock.json               # Locked dependency versions
 │   ├── tsconfig.json                   # TypeScript config
 │   ├── tsconfig.node.json              # TypeScript config for tooling
-│   ├── vite.config.ts                  # Vite configuration
-│   └── src/                            # Frontend source code
-│       ├── components/                 # Reusable React components
-│       │   ├── CompanySelection.tsx    # Company selection UI
-│       │   ├── BrandGuidelines.tsx     # Brand rules UI
-│       │   ├── ContentCreation.tsx     # Content creation UI
-│       │   ├── ContentReview.tsx       # Content review UI
-│       │   └── Navigation.tsx          # App navigation
-│       ├── types/                      # Shared TypeScript types
-│       │   └── index.ts                # Type exports
-│       ├── App.tsx                     # Main app component
-│       ├── main.tsx                    # React entry point
-│       └── index.css                   # Global styles
+│   ├── vite.config.ts                  # Vite config
+│   └── src/                            # Frontend source
+│       ├── components/                 # React components
+│       ├── types/                      # Type definitions
+│       ├── App.tsx                     # Main component
+│       └── main.tsx                    # Entry point
 ```
 
 ## Notes

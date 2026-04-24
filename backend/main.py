@@ -10,8 +10,8 @@ import traceback
 import cloudinary
 import cloudinary.uploader
 
-from brandAgent import analyze_brand, analyze_guidelines, generate_brand_guidelines
-from contentAgent import analyze_images, generate_caption, generate_image_prompt, generate_image
+from agents.brandAgent import analyze_brand, analyze_guidelines, generate_brand_guidelines
+from agents.contentAgent import analyze_images, generate_caption, generate_image_prompt, generate_image
 
 # Load environment variables
 load_dotenv()
@@ -25,6 +25,7 @@ CORS(app, resources={
             "origins": [
             "http://localhost:3000", # Local
             "https://topbox-mvp-git-dev-dev-gaitanos-projects.vercel.app", # dev
+            "https://topbox-mvp-git-api-integration-dev-gaitanos-projects.vercel.app",
             "https://topbox-agency.vercel.app" # Prod
             ],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -77,7 +78,7 @@ def get_companies() -> tuple[Response, int]:
                 "main_competitors": r[9],
                 "personality": r[10],
                 "tone": r[11],
-                "createdAt": r[12].isoformat() if r[11] else None,
+                "createdAt": r[12].isoformat() if r[12] else None,
             }
             for r in rows
         ]

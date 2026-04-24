@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field
 from langchain.agents import create_agent
 from langchain_community.utilities.dalle_image_generator import DallEAPIWrapper
 
-from agentSetup import model, image_analysis_model, CAPTION_GEN_PROMPT, IMAGE_ANALYSIS_PROMPT, POST_IMAGE_PROMPT_GEN
-from responseModels import ImageAnalysisResponseFormat
+from agents.agentSetup import model, image_analysis_model, CAPTION_GEN_PROMPT, IMAGE_ANALYSIS_PROMPT, POST_IMAGE_PROMPT_GEN
+from agents.responseModels import ImageAnalysisResponseFormat
 
 
 # Setup environment files
