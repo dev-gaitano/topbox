@@ -10,8 +10,8 @@ import traceback
 import cloudinary
 import cloudinary.uploader
 
-from brandAgent import analyze_brand, analyze_guidelines, generate_brand_guidelines
-from contentAgent import analyze_images, generate_caption, generate_image_prompt, generate_image
+from agents.brandAgent import analyze_brand, analyze_guidelines, generate_brand_guidelines
+from agents.contentAgent import analyze_images, generate_caption, generate_image_prompt, generate_image
 
 # Load environment variables
 load_dotenv()
