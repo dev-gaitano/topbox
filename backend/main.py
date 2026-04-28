@@ -154,9 +154,9 @@ def create_company() -> tuple[Response, int]:
         # Insert company to database
         cursor.execute(
             """
-            INSERT INTO companies (name, industry, email, monthly_budget,
-                                   description, target_audience, unique_value,
-                                   main_competitors, brand_personality, brand_tone)
+            INSERT INTO companies (name, industry, email, description, target_audience,
+                                   color_palette, unique_value, main_competitors,
+                                   personality, tone)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s)
             RETURNING id, name, created_at;
             """,
@@ -212,9 +212,9 @@ def get_company(company_id) -> tuple[Response, int]:
         # Get company from database
         cursor.execute(
             """
-            SELECT id, name, industry, email, monthly_budget,
-                   description, target_audience, unique_value,
-                   main_competitors, brand_personality, brand_tone, created_at
+            SELECT id, name, logo, industry, email, description, target_audience,
+                   color_palette, unique_value, main_competitors, personality,
+                   tone, created_at
             FROM companies
             WHERE id = %s;
             """,
@@ -232,16 +232,17 @@ def get_company(company_id) -> tuple[Response, int]:
         company: dict[str, Any] = {
             "id": row[0],
             "name": row[1],
-            "industry": row[2],
-            "email": row[3],
-            "monthly_budget": row[4],
+            "logo": row[2],
+            "industry": row[3],
+            "email": row[4],
             "description": row[5],
             "target_audience": row[6],
-            "unique_value": row[7],
-            "main_competitors": row[8],
-            "brand_personality": row[9],
-            "brand_tone": row[10],
-            "createdAt": row[11].isoformat() if row[11] else None,
+            "color_palette": row[7],
+            "unique_value": row[8],
+            "main_competitors": row[9],
+            "personality": row[10],
+            "tone": row[11],
+            "createdAt": row[12].isoformat() if row[11] else None,
         }
 
         return jsonify(company), 200
