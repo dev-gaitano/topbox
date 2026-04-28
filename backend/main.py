@@ -154,9 +154,9 @@ def create_company() -> tuple[Response, int]:
         # Insert company to database
         cursor.execute(
             """
-            INSERT INTO companies (name, industry, email, monthly_budget,
-                                   description, target_audience, unique_value,
-                                   main_competitors, brand_personality, brand_tone)
+            INSERT INTO companies (name, industry, email, description, target_audience,
+                                   color_palette, unique_value, main_competitors,
+                                   personality, tone)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s)
             RETURNING id, name, created_at;
             """,
