@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://topbox-mvp.onrender.com',
+        target: 'http://13.53.132.13',
         changeOrigin: true,
       },
     },
