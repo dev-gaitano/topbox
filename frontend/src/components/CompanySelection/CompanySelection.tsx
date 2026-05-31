@@ -1,5 +1,8 @@
 import "./CompanySelection.css"
 
+// Components
+import NewCompanyForm from "../NewCompanyForm/NewCompanyForm";
+
 // Props
 import { Company } from "../../props"
 import { CompanySelectionProps } from "../../props"
@@ -10,6 +13,11 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 // Destructure interface to get keys as function parameters
 function CompanySelection({ selectedCompany, onSelectCompany }: CompanySelectionProps) {
   const [companies, setCompanies] = useState<Company[]>([])
+  const [newCompanyForm, setNewCompanyForm] = useState(false)
+
+  function handleNewCompany() {
+    setNewCompanyForm(true)
+  }
 
   // Fetch companies from api
   useEffect(() => {
@@ -39,7 +47,7 @@ function CompanySelection({ selectedCompany, onSelectCompany }: CompanySelection
         <h2>+ COMPANIES</h2>
       </div>
       <div className="cs-container">
-        <div className="cs-add-new">
+        <button className="cs-add-new" onClick={handleNewCompany}>
           <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
             {/* Horizonatal bar */}
             <rect x="8" y="22" width="32" height="4" rx="1" fill="#FFFFFF" />
@@ -54,7 +62,7 @@ function CompanySelection({ selectedCompany, onSelectCompany }: CompanySelection
               </filter>
             </defs>
           </svg>
-        </div>
+        </button>
         <div className="cs-carousel">
           {/* Map saved companies */}
           {companies.map((company) => (
@@ -73,6 +81,7 @@ function CompanySelection({ selectedCompany, onSelectCompany }: CompanySelection
           ))}
         </div>
       </div>
+      <NewCompanyForm newCompanyForm={newCompanyForm} />
     </section>
   )
 }

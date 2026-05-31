@@ -6,7 +6,7 @@
 
 .cs-add-new {
   min-height: 100px;
-  min-width: 132px;
+  width: 132px;
   border-radius: 16px;
   display: flex;
   justify-content: center;
