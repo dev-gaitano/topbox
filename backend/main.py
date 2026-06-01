@@ -118,15 +118,16 @@ def create_company() -> tuple[Response, int]:
             }), 400
 
         name: str | None = (company_data.get("businessName") or "").strip()
+        logo: str | None = (company_data.get("logo") or "").strip()
         industry: str | None = (company_data.get("industry") or "").strip()
         email: str | None = (company_data.get("email") or "").strip()
-        monthly_budget_str: str | None = (company_data.get("budget") or "").strip()
         description: str | None = (company_data.get("brandDescription") or "").strip()
         target_audience: str | None = (company_data.get("targetAudience") or "").strip()
+        color_palette: str | None = (company_data.get("colorPalette") or "").strip()
         unique_value: str | None = (company_data.get("uniqueValue") or "").strip()
-        main_competitors: str | None = (company_data.get("competitors") or "").strip()
-        brand_personality: list | None = company_data.get("brandPersonality") or []
-        brand_tone: str | None = (company_data.get("tone") or "").strip()
+        main_competitors: str | None = (company_data.get("mainCompetitors") or "").strip()
+        personality: list | None = company_data.get("personality") or []
+        tone: str | None = (company_data.get("tone") or "").strip()
         
         # Check if comapany name was provided
         if not name:
@@ -135,34 +136,30 @@ def create_company() -> tuple[Response, int]:
                 "message": "Missing company name"
             }), 400
 
-        # Convert budget to integer if provided
-        monthly_budget = 0
-        if monthly_budget_str:
-            try:
-                monthly_budget = int(monthly_budget_str)
-            except ValueError:
-                pass
-
-        # Comma sperate competitor values
+        # Comma seperate competitor values
         if main_competitors:
-            competitors_list = [
-                c.strip() for c in main_competitors.split(",") if c.strip()
-            ]
+            competitors = [c.strip() for c in main_competitors.split(",") if c.strip()]
         else:
-            competitors_list = []
+            competitors = []
+
+        # Comma seperate color palette values
+        if color_palette:
+            colors = [c.strip() for c in color_palette.split(",") if c.strip()]
+        else:
+            colors = []
 
         # Insert company to database
         cursor.execute(
             """
-            INSERT INTO companies (name, industry, email, description, target_audience,
+            INSERT INTO companies (name, logo, industry, email, description, target_audience,
                                    color_palette, unique_value, main_competitors,
                                    personality, tone)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s)
             RETURNING id, name, created_at;
             """,
-            (name, industry, email, monthly_budget, description, target_audience,
-            unique_value, json.dumps(competitors_list), json.dumps(brand_personality),
-            brand_tone),
+            (name, logo, industry, email, description, target_audience,
+             json.dumps(colors), unique_value, json.dumps(competitors),
+             json.dumps(personality), tone),
         )
         row = cursor.fetchone()
         conn.commit()
