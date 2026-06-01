@@ -47,6 +47,37 @@
   display: none;
 }
 
+.cs-action-btn {
+  z-index: 500;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  position: absolute;
+  background-color: var(--background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cs-delete-btn {
+  top: 144px;
+  left: 245px;
+}
+
+.cs-delete-btn:hover {
+  transform: translateY(12px);
+}
+
+.cs-edit-btn {
+  top: 244px;
+  left: 245px;
+}
+
+.cs-edit-btn:hover {
+  transform: translateY(-12px);
+}
+
 .cs-company-item {
   position: relative;
   height: 100px;
