@@ -198,8 +198,58 @@ def create_company() -> tuple[Response, int]:
             conn.close()
 
 
+@app.route("/api/companies/<int:company_id>", methods=["DELETE"])
+def delete_company(company_id: int) -> tuple[Response, int]:
+    conn = cursor = None
+
+    try:
+        conn = db_connection()
+        cursor = conn.cursor()
+
+        # Delete company from database
+        cursor.execute(
+            """
+            DELETE FROM companies WHERE id = %s
+            RETURNING id, name, created_at
+            """,
+            (company_id,)
+        )
+        row = cursor.fetchone()
+        conn.commit()
+
+        # Check if row was returned
+        if not row:
+            return jsonify({
+                "success": False,
+                "message": "Failed to return deleted company data",
+            }), 500
+
+        return jsonify({
+            "success": True,
+            "message": "Company deleted successfully",
+            "data": {
+                "id": row[0],
+                "name": row[1],
+                "createdAt": row[2].isoformat() if row[2] else None,
+            }
+        }), 204
+
+    except Exception as e:
+        print(f"Error deleting company: {e}")
+        return jsonify({
+            "success": False,
+            "message": "Failed to delete company",
+            "error": str(e)
+        }), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 @app.route("/api/companies/<int:company_id>", methods=["GET"])
-def get_company(company_id) -> tuple[Response, int]:
+def get_company(company_id: int) -> tuple[Response, int]:
     conn = cursor = None
 
     try:
