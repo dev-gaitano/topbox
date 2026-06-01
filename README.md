@@ -12,6 +12,7 @@ TopBox is an AI powered content management system that helps teams create, organ
 - React + TypeScript + CSS + Vite Front-end
 - Python + Flask Back-end API
 - PostreSQL Database
+- OpenAI API
 
 ## Features
 
