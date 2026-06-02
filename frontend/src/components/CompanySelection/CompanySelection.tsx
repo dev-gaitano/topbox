@@ -7,6 +7,7 @@ import NewCompanyForm from "../NewCompanyForm/NewCompanyForm";
 import { Company } from "../../props"
 import { CompanySelectionProps } from "../../props"
 import { useEffect, useState } from "react"
+import CompanyUpdateForm from "../CompanyUpdateForm/ComanyUpdateForm";
 
 
 // Destructure interface to get keys as function parameters
@@ -16,9 +17,33 @@ function CompanySelection({ selectedCompany, onSelectCompany }: CompanySelection
   const [companies, setCompanies] = useState<Company[]>([])
   const [newCompanyForm, setNewCompanyForm] = useState(false)
   const [isHoveredId, setIsHoveredId] = useState<number | null>(null)
+  const [companyUpdateForm, setCompanyUpdateForm] = useState(false)
+  const [company, setCompany] = useState<Company | null>(null)
 
   function handleNewCompany() {
     setNewCompanyForm(true)
+  }
+
+  async function handleCompanyUpdateForm(selectedCompany: Company) {
+    try {
+      const res = await fetch(`${API_BASE}/api/companies/${selectedCompany.id}`)
+      const resJson = await res.json()
+
+      if (!res.ok) {
+        console.error('Failed to fetch company');
+        console.log(res)
+        console.log(resJson)
+        return
+      }
+
+      setCompany(selectedCompany)
+      setCompanyUpdateForm(true)
+      console.log(selectedCompany);
+      console.log(company);
+    } catch (e) {
+      console.error('Error fetching company:', e);
+      setCompany(selectedCompany)
+    }
   }
 
   // Fetch companies from api
@@ -118,6 +143,7 @@ function CompanySelection({ selectedCompany, onSelectCompany }: CompanySelection
                 )}
               </div>
               <button
+                onClick={() => handleCompanyUpdateForm(company)}
                 className={`cs-action-btn cs-edit-btn ${selectedCompany?.id === company.id && isHoveredId === company.id ? "" : "hidden"
                   }`}
               >
@@ -130,6 +156,7 @@ function CompanySelection({ selectedCompany, onSelectCompany }: CompanySelection
         </div>
       </div>
       <NewCompanyForm newCompanyForm={newCompanyForm} />
+      <CompanyUpdateForm companyUpdateForm={companyUpdateForm} company={company} />
     </section>
   )
 }
