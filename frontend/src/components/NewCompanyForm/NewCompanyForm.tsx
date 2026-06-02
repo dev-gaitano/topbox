@@ -108,7 +108,7 @@ function NewCompanyForm({ newCompanyForm }: { newCompanyForm: boolean }) {
           <input
             name="uniqueValue"
             placeholder="Unique value"
-            value={formData.colorPalette}
+            value={formData.uniqueValue}
             onChange={handleChange}
           />
           <input
