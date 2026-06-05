@@ -84,7 +84,9 @@ function CompanyUpdateForm(
       <h2>Update {company?.name}</h2>
       <form className="cuf-form" onSubmit={(e) => {
         e.preventDefault()
-        handleSubmit(company.id)
+        if (company?.id) {
+          handleSubmit(company.id)
+        }
       }}>
         <div className="cuf-input-container">
           <input
