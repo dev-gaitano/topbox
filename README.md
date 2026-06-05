@@ -61,6 +61,7 @@ The frontend expects the following Flask backend endpoints:
 - `POST /api/companies` - Create a new company
 - `DELETE /api/companies/<int:company_id>` - Delete selected company
 - `GET /api/companies/<int:company_id>` - Fetch selected company
+- `PATCH /api/companies/<int:company_id>` - Update selected company
 
 ### Brand Guidelines
 - `POST /api/brand-guidelines/upload` - Upload brand guidelines file
