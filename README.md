@@ -12,6 +12,7 @@ TopBox is an AI powered content management system that helps teams create, organ
 - React + TypeScript + CSS + Vite Front-end
 - Python + Flask Back-end API
 - PostreSQL Database
+- OpenAI API
 
 ## Features
 
@@ -58,7 +59,9 @@ The frontend expects the following Flask backend endpoints:
 ### Companies
 - `GET /api/companies` - Fetch all companies
 - `POST /api/companies` - Create a new company
+- `DELETE /api/companies/<int:company_id>` - Delete selected company
 - `GET /api/companies/<int:company_id>` - Fetch selected company
+- `PATCH /api/companies/<int:company_id>` - Update selected company
 
 ### Brand Guidelines
 - `POST /api/brand-guidelines/upload` - Upload brand guidelines file

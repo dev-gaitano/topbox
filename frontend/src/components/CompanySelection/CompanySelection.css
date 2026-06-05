@@ -6,7 +6,7 @@
 
 .cs-add-new {
   min-height: 100px;
-  min-width: 132px;
+  width: 132px;
   border-radius: 16px;
   display: flex;
   justify-content: center;
@@ -45,6 +45,42 @@
 
 .cs-carousel::-webkit-scrollbar {
   display: none;
+}
+
+.cs-item-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cs-action-btn {
+  z-index: 500;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  position: absolute;
+  left: 73px;
+  background-color: var(--background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cs-delete-btn {
+  top: 8px;
+}
+
+.cs-delete-btn:hover {
+  transform: scale(1.1);
+}
+
+.cs-edit-btn {
+  bottom: 8px;
+}
+
+.cs-edit-btn:hover {
+  transform: scale(1.1);
 }
 
 .cs-company-item {

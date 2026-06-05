@@ -118,15 +118,16 @@ def create_company() -> tuple[Response, int]:
             }), 400
 
         name: str | None = (company_data.get("businessName") or "").strip()
+        logo: str | None = (company_data.get("logo") or "").strip()
         industry: str | None = (company_data.get("industry") or "").strip()
         email: str | None = (company_data.get("email") or "").strip()
-        monthly_budget_str: str | None = (company_data.get("budget") or "").strip()
         description: str | None = (company_data.get("brandDescription") or "").strip()
         target_audience: str | None = (company_data.get("targetAudience") or "").strip()
+        color_palette: str | None = (company_data.get("colorPalette") or "").strip()
         unique_value: str | None = (company_data.get("uniqueValue") or "").strip()
-        main_competitors: str | None = (company_data.get("competitors") or "").strip()
-        brand_personality: list | None = company_data.get("brandPersonality") or []
-        brand_tone: str | None = (company_data.get("tone") or "").strip()
+        main_competitors: str | None = (company_data.get("mainCompetitors") or "").strip()
+        personality: list | None = company_data.get("personality") or []
+        tone: str | None = (company_data.get("tone") or "").strip()
         
         # Check if comapany name was provided
         if not name:
@@ -135,34 +136,30 @@ def create_company() -> tuple[Response, int]:
                 "message": "Missing company name"
             }), 400
 
-        # Convert budget to integer if provided
-        monthly_budget = 0
-        if monthly_budget_str:
-            try:
-                monthly_budget = int(monthly_budget_str)
-            except ValueError:
-                pass
-
-        # Comma sperate competitor values
+        # Comma seperate competitor values
         if main_competitors:
-            competitors_list = [
-                c.strip() for c in main_competitors.split(",") if c.strip()
-            ]
+            competitors = [c.strip() for c in main_competitors.split(",") if c.strip()]
         else:
-            competitors_list = []
+            competitors = []
+
+        # Comma seperate color palette values
+        if color_palette:
+            colors = [c.strip() for c in color_palette.split(",") if c.strip()]
+        else:
+            colors = []
 
         # Insert company to database
         cursor.execute(
             """
-            INSERT INTO companies (name, industry, email, description, target_audience,
+            INSERT INTO companies (name, logo, industry, email, description, target_audience,
                                    color_palette, unique_value, main_competitors,
                                    personality, tone)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s)
             RETURNING id, name, created_at;
             """,
-            (name, industry, email, monthly_budget, description, target_audience,
-            unique_value, json.dumps(competitors_list), json.dumps(brand_personality),
-            brand_tone),
+            (name, logo, industry, email, description, target_audience,
+             json.dumps(colors), unique_value, json.dumps(competitors),
+             json.dumps(personality), tone),
         )
         row = cursor.fetchone()
         conn.commit()
@@ -201,8 +198,58 @@ def create_company() -> tuple[Response, int]:
             conn.close()
 
 
+@app.route("/api/companies/<int:company_id>", methods=["DELETE"])
+def delete_company(company_id: int) -> tuple[Response, int]:
+    conn = cursor = None
+
+    try:
+        conn = db_connection()
+        cursor = conn.cursor()
+
+        # Delete company from database
+        cursor.execute(
+            """
+            DELETE FROM companies WHERE id = %s
+            RETURNING id, name, created_at
+            """,
+            (company_id,)
+        )
+        row = cursor.fetchone()
+        conn.commit()
+
+        # Check if row was returned
+        if not row:
+            return jsonify({
+                "success": False,
+                "message": "Failed to return deleted company data",
+            }), 500
+
+        return jsonify({
+            "success": True,
+            "message": "Company deleted successfully",
+            "data": {
+                "id": row[0],
+                "name": row[1],
+                "createdAt": row[2].isoformat() if row[2] else None,
+            }
+        }), 204
+
+    except Exception as e:
+        print(f"Error deleting company: {e}")
+        return jsonify({
+            "success": False,
+            "message": "Failed to delete company",
+            "error": str(e)
+        }), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 @app.route("/api/companies/<int:company_id>", methods=["GET"])
-def get_company(company_id) -> tuple[Response, int]:
+def get_company(company_id: int) -> tuple[Response, int]:
     conn = cursor = None
 
     try:
@@ -260,6 +307,109 @@ def get_company(company_id) -> tuple[Response, int]:
         if conn:
             conn.close()
 
+@app.route("/api/companies/<int:company_id>", methods=["PATCH"])
+def update_company(company_id) -> tuple[Response, int]:
+    conn = cursor = None
+
+    try:
+        conn = db_connection()
+        cursor = conn.cursor()
+
+        # Get data from input
+        company_data: dict[str, Any] | None = request.get_json(silent=True)
+
+        if not company_data:
+            return jsonify({
+                "success": False,
+                "message": "No JSON data provided"
+            }), 400
+
+        name: str | None = (company_data.get("businessName") or "").strip()
+        logo: str | None = (company_data.get("logo") or "").strip()
+        industry: str | None = (company_data.get("industry") or "").strip()
+        email: str | None = (company_data.get("email") or "").strip()
+        description: str | None = (company_data.get("description") or "").strip()
+        target_audience: str | None = (company_data.get("targetAudience") or "").strip()
+        
+        color_palette_raw = company_data.get("colorPalette") or ""
+        if isinstance(color_palette_raw, list):
+            color_palette_raw = ",".join(map(str, color_palette_raw))
+        color_palette: str = color_palette_raw.strip()
+
+        unique_value: str | None = (company_data.get("uniqueValue") or "").strip()
+
+        main_competitors_raw = company_data.get("mainCompetitors") or ""
+        if isinstance(main_competitors_raw, list):
+            main_competitors_raw = ",".join(map(str, main_competitors_raw))
+        main_competitors: str = main_competitors_raw.strip()
+
+        personality: list | str | None = company_data.get("personality") or []
+        if isinstance(personality, str):
+            personality = [p.strip() for p in personality.split(",") if p.strip()]
+
+        tone: str | None = (company_data.get("tone") or "").strip()
+        
+        # Check if company name was provided
+        if not name:
+            return jsonify({
+                "success": False,
+                "message": "Missing company name"
+            }), 400
+
+        # Comma separate competitor values
+        if main_competitors:
+            competitors = [c.strip() for c in main_competitors.split(",") if c.strip()]
+        else:
+            competitors = []
+
+        # Comma separate color palette values
+        if color_palette:
+            colors = [c.strip() for c in color_palette.split(",") if c.strip()]
+        else:
+            colors = []
+
+        # Update company in database
+        cursor.execute("""
+            UPDATE companies
+            SET name = %s, logo = %s, industry = %s, email = %s, description = %s,
+                       target_audience = %s, color_palette = %s::jsonb, unique_value = %s,
+                       main_competitors = %s::jsonb, personality = %s::jsonb, tone = %s
+            WHERE id = %s
+            RETURNING id, name, created_at
+        """, 
+        (name, logo, industry, email, description, target_audience, json.dumps(colors),
+         unique_value, json.dumps(competitors), json.dumps(personality), tone, company_id))
+
+        row = cursor.fetchone()
+        conn.commit()
+
+        if not row:
+            return jsonify({
+                "success": False,
+                "message": "Company not found"
+            }), 404
+
+        # Store company data in a dict
+        company: dict[str, Any] = {
+            "id": row[0],
+            "name": row[1],
+            "createdAt": row[2].isoformat() if row[2] else None,
+        }
+
+        return jsonify(company), 200
+
+    except Exception as e:
+        print(f"Error updating company: {e}")
+        return jsonify({
+            "success": False,
+            "message": "Failed to update company",
+            "error": str(e)
+        }), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 # =====================================================

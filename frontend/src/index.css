@@ -49,6 +49,7 @@ p {
 
 button {
   border: none;
+  background: none;
   width: 100%;
 }
 
@@ -62,6 +63,10 @@ button {
   display: flex;
   flex-direction: column;
   padding: 24px;
+}
+
+.hidden {
+  display: none;
 }
 
 .section {
