@@ -121,7 +121,7 @@ def create_company() -> tuple[Response, int]:
         logo: str | None = (company_data.get("logo") or "").strip()
         industry: str | None = (company_data.get("industry") or "").strip()
         email: str | None = (company_data.get("email") or "").strip()
-        description: str | None = (company_data.get("brandDescription") or "").strip()
+        description: str | None = (company_data.get("description") or "").strip()
         target_audience: str | None = (company_data.get("targetAudience") or "").strip()
         color_palette: str | None = (company_data.get("colorPalette") or "").strip()
         unique_value: str | None = (company_data.get("uniqueValue") or "").strip()
@@ -306,6 +306,7 @@ def get_company(company_id: int) -> tuple[Response, int]:
             cursor.close()
         if conn:
             conn.close()
+
 
 @app.route("/api/companies/<int:company_id>", methods=["PATCH"])
 def update_company(company_id) -> tuple[Response, int]:
