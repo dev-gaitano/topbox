@@ -1,9 +1,15 @@
-import "./NewCompanyForm.css"
+import "./NewCompanyForm.css";
 
 // Modules
-import { useState } from "react"
+import { useState } from "react";
 
-function NewCompanyForm({ newCompanyForm }: { newCompanyForm: boolean }) {
+function NewCompanyForm({
+  newCompanyForm,
+  setNewCompanyForm,
+}: {
+  newCompanyForm: boolean;
+  setNewCompanyForm: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
   const [formData, setFormData] = useState({
@@ -18,11 +24,11 @@ function NewCompanyForm({ newCompanyForm }: { newCompanyForm: boolean }) {
     mainCompetitors: "",
     personality: [],
     tone: "",
-  })
+  });
 
   // Handle form submit event
   async function handleSubmit(e: React.SubmitEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
       // Post to endpoint
@@ -31,37 +37,57 @@ function NewCompanyForm({ newCompanyForm }: { newCompanyForm: boolean }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
-      })
+        body: JSON.stringify(formData),
+      });
 
       // Get response data
-      const data = await res.json()
+      const data = await res.json();
 
       // Check if response was ok
       if (!res.ok) {
         console.error(data);
-        return
+        return;
       }
 
       console.log(data);
+      alert("Company added successfully!");
+      setNewCompanyForm(false);
     } catch (e) {
-      console.error('Error posting:', e);
+      console.error("Error posting:", e);
     }
   }
 
   // Handle input value change event
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
-    }))
+      [e.target.name]: e.target.value,
+    }));
   }
 
   return (
     <div className={`ncf-container ${newCompanyForm ? "" : "hidden"}`}>
-      <h2>Create new company</h2>
+      <div className="ncf-header">
+        <h2>Create new company</h2>
+        <button
+          className="ncf-close-btn"
+          onClick={() => setNewCompanyForm(false)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+            fill="#ABABAB"
+          >
+            <path d="m300-258-42-42 180-180-180-179 42-42 180 180 179-180 42 42-180 179 180 180-42 42-179-180-180 180Z" />
+          </svg>
+        </button>
+      </div>
       <form className="ncf-form" onSubmit={handleSubmit}>
         <div className="ncf-input-container">
           <input
@@ -133,7 +159,7 @@ function NewCompanyForm({ newCompanyForm }: { newCompanyForm: boolean }) {
         <button type="submit">Create company</button>
       </form>
     </div>
-  )
+  );
 }
 
-export default NewCompanyForm
+export default NewCompanyForm;
