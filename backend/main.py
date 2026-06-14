@@ -1,15 +1,19 @@
-from typing import Any
-from flask import Flask, Response, request, jsonify
-from flask_cors import CORS
-from databaseConnection import db_connection
-from werkzeug.utils import secure_filename
-from dotenv import load_dotenv
+# Builtin
 import os
 import json
 import traceback
+from typing import Any
+
+# Third-party
+from flask import Flask, Response, request, jsonify
+from flask_cors import CORS
+from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
 import cloudinary
 import cloudinary.uploader
 
+# Custom
+from databaseConnection import db_connection
 from agents.brandAgent import analyze_brand, analyze_guidelines, generate_brand_guidelines
 from agents.contentAgent import analyze_images, generate_caption, generate_image_prompt, generate_image
 

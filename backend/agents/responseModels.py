@@ -1,5 +1,8 @@
-from pydantic import BaseModel, Field
+# Builtin
 from typing import Optional
+
+# Third-party
+from pydantic import BaseModel, Field
 
 class Metadata(BaseModel):
     confidence_score: str

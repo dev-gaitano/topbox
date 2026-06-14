@@ -1,7 +1,10 @@
-import psycopg2
+# Builtin
 import os
-from dotenv import load_dotenv
 from urllib.parse import urlparse
+
+# Third-party
+import psycopg2
+from dotenv import load_dotenv
 
 load_dotenv()
 
