@@ -8,7 +8,7 @@ function NewCompanyForm({
   setNewCompanyForm,
 }: {
   newCompanyForm: boolean;
-  setNewCompanyForm: React.SetStateAction<boolean>;
+  setNewCompanyForm: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
