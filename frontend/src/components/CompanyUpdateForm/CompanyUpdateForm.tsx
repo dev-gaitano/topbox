@@ -1,11 +1,17 @@
 import { Company } from "../../props";
-import "./ComanyUpdateForm.css"
+import "./CompanyUpdateForm.css";
 
 import { useState, useEffect } from "react";
 
-function CompanyUpdateForm(
-  { companyUpdateForm, company }: { companyUpdateForm: boolean, company: Company | null }
-) {
+function CompanyUpdateForm({
+  companyUpdateForm,
+  setCompanyUpdateForm,
+  company,
+}: {
+  companyUpdateForm: boolean;
+  setCompanyUpdateForm: React.Dispatch<React.SetStateAction<boolean>>;
+  company: Company | null;
+}) {
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
   const [formData, setFormData] = useState({
@@ -20,7 +26,7 @@ function CompanyUpdateForm(
     mainCompetitors: company?.main_competitors,
     personality: company?.personality,
     tone: company?.tone,
-  })
+  });
 
   // Get fresh company data on render
   useEffect(() => {
@@ -39,8 +45,7 @@ function CompanyUpdateForm(
         tone: company.tone || "",
       });
     }
-  }, [company])
-
+  }, [company]);
 
   // Handle form submit event
   async function handleSubmit(companyId: number) {
@@ -51,43 +56,64 @@ function CompanyUpdateForm(
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
-      })
+        body: JSON.stringify(formData),
+      });
 
       // Get response data
-      const data = await res.json()
+      const data = await res.json();
 
       // Check if response was ok
       if (!res.ok) {
         console.error(data);
-        return
+        return;
       }
 
       console.log(data);
     } catch (e) {
-      console.error('Error patching:', e);
+      console.error("Error patching:", e);
     }
   }
 
   // Handle input value change event
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
-    }))
+      [e.target.name]: e.target.value,
+    }));
   }
 
   return (
     <div className={`cuf-container ${!companyUpdateForm ? "hidden" : ""}`}>
-      <h2>Update {company?.name}</h2>
-      <form className="cuf-form" onSubmit={(e) => {
-        e.preventDefault()
-        if (company?.id) {
-          handleSubmit(company.id)
-        }
-      }}>
+      <div className="cuf-header">
+        <h2>Update {company?.name}</h2>
+        <button
+          className="cuf-close-btn"
+          onClick={() => setCompanyUpdateForm(false)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+            fill="#ABABAB"
+          >
+            <path d="m300-258-42-42 180-180-180-179 42-42 180 180 179-180 42 42-180 179 180 180-42 42-179-180-180 180Z" />
+          </svg>
+        </button>
+      </div>
+      <form
+        className="cuf-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (company?.id) {
+            handleSubmit(company.id);
+          }
+        }}
+      >
         <div className="cuf-input-container">
           <input
             name="businessName"
@@ -158,7 +184,7 @@ function CompanyUpdateForm(
         <button type="submit">Update company</button>
       </form>
     </div>
-  )
+  );
 }
 
-export default CompanyUpdateForm
+export default CompanyUpdateForm;
