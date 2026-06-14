@@ -18,16 +18,20 @@ CREATE TABLE IF NOT EXISTS companies (
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS brand_guidelines (
-	id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS brand_playbooks (
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 	company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-	content TEXT,
-	file_filename TEXT,
 	file_path TEXT,
+	file_uploaded_at TIMESTAMPTZ,
+	file_saved_at TIMESTAMPTZ,
 	file_analysis JSONB,
-	uploaded_at TIMESTAMPTZ,
-	generated_at TIMESTAMPTZ,
-	saved_at TIMESTAMPTZ,
+	analysis_generated_at TIMESTAMPTZ,
+	voice TEXT,
+	logos JSONB,
+	typography TEXT,
+	visual_style TEXT,
+	content_rules TEXT,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 	UNIQUE (company_id)
 );
 
