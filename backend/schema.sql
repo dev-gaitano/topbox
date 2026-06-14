@@ -28,7 +28,10 @@ CREATE TABLE IF NOT EXISTS brand_playbooks (
 	analysis_generated_at TIMESTAMPTZ,
 	voice TEXT,
 	logos JSONB,
-	typography TEXT,
+	typography_direction TEXT,
+	headline_typeface TEXT,
+	body_typeface TEXT,
+	accent_typeface TEXT,
 	visual_style TEXT,
 	content_rules TEXT,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
