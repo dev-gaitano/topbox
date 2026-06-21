@@ -8,12 +8,17 @@ from main import app
 
 @pytest.fixture
 def client():
+    """Test client for flask app"""
     app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
 
 
-def test_company_data(client):
+def test_company_data_returns_none(client):
+    """
+    Check if correct status code and json is returned when company data is an
+    empty dict or a None type
+    """
     response = client.post("/api/companies", json={})
 
     assert response.status_code == 400
@@ -22,6 +27,10 @@ def test_company_data(client):
 
 @patch("main.db_connection")
 def test_insert_company_db_returns_none(mock_db_conn, client):
+    """
+    Check if correct status code and json is returned when company insertion to
+    db returns an Empty tuple or a None type
+    """
     mock_conn = mock_cursor = MagicMock()
 
     mock_cursor.fetchone.return_value = ()
@@ -50,6 +59,10 @@ def test_insert_company_db_returns_none(mock_db_conn, client):
 
 @patch("main.db_connection")
 def test_insert_company_success(mock_db_conn, client):
+    """
+    Check if correct status code and json is returned on company insertion
+    success
+    """
     mock_conn = mock_cursor = MagicMock()
 
     mock_cursor.fetchone.return_value = (
