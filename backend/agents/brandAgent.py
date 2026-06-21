@@ -1,22 +1,27 @@
-from dotenv import load_dotenv
+# Builtin
+import io
 import json
 from typing import Any, Optional
-from werkzeug.datastructures import FileStorage
+
+# Third-party
 import pdfplumber
-import io
-
-from pydantic import BaseModel, Field
+from dotenv import load_dotenv
 from langchain.agents import create_agent
+from pydantic import BaseModel, Field
+from werkzeug.datastructures import FileStorage
 
-from agents.agentSetup import model, BRAND_ANALYSIS_PROMPT, GUIDELINE_MERGING_PROMPT
-
+# Custom
+from agents.agentSetup import BRAND_ANALYSIS_PROMPT, GUIDELINE_MERGING_PROMPT, model
 
 # Setup environment files
 load_dotenv()
 
+
 # Response format
 class BrandAnalysisResponseFormat(BaseModel):
-    brand_voice: list[str] = Field( description="3-5 adjectives that express the brand voice")
+    brand_voice: list[str] = Field(
+        description="3-5 adjectives that express the brand voice"
+    )
     color_palette: list[str] = Field(
         description="""5 hex colors that match the industry and vibe
             (primary, secondary, accent, text, background)"""
@@ -31,22 +36,23 @@ class BrandAnalysisResponseFormat(BaseModel):
     posting_style: str = Field(description="Posting style description")
     industry: Optional[str] = Field(default=None, description="Industry name")
 
+
 # Define tools
 brand_analysis_tools = []
 
 # Define Agents
 brand_analysis_agent = create_agent(
-   model, 
-   tools=brand_analysis_tools,
-   system_prompt=BRAND_ANALYSIS_PROMPT,
-   response_format=BrandAnalysisResponseFormat,
+    model,
+    tools=brand_analysis_tools,
+    system_prompt=BRAND_ANALYSIS_PROMPT,
+    response_format=BrandAnalysisResponseFormat,
 )
 
 guideline_merging_agent = create_agent(
-   model, 
-   tools=brand_analysis_tools,
-   system_prompt=GUIDELINE_MERGING_PROMPT,
-   response_format=BrandAnalysisResponseFormat,
+    model,
+    tools=brand_analysis_tools,
+    system_prompt=GUIDELINE_MERGING_PROMPT,
+    response_format=BrandAnalysisResponseFormat,
 )
 
 
@@ -54,24 +60,22 @@ guideline_merging_agent = create_agent(
 def analyze_brand(questionnaire_data: dict) -> dict[str, Any]:
     try:
         # Invoke the agent
-        response = brand_analysis_agent.invoke({
-            "messages": [
-                {
-                    "role": "user",
-                    "content": f"Analyze this questionnaire data:\n{json.dumps(questionnaire_data, indent=2)}"
-                }
-            ]
-        })
+        response = brand_analysis_agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": f"Analyze this questionnaire data:\n{json.dumps(questionnaire_data, indent=2)}",
+                    }
+                ]
+            }
+        )
 
         # Return the required data
         return response["structured_response"].model_dump()
     except Exception as e:
         print(f"Error in analyze_brand(): {str(e)}")
-        return { 
-            "success" : False,
-            "message" : "Error analyzing brand",
-            "error" : str(e)
-        }
+        return {"success": False, "message": "Error analyzing brand", "error": str(e)}
 
 
 # Analyze uploaded brand guidelines
@@ -87,14 +91,13 @@ def analyze_guidelines(uploaded_file: FileStorage) -> dict[str, Any]:
                 file_text += page.extract_text() or ""
 
         # Invoke the agent
-        response = brand_analysis_agent.invoke({
-            "messages": [
-                {
-                    "role": "user",
-                    "content": f"Analyze this data:\n{file_text}"
-                }
-            ]
-        })
+        response = brand_analysis_agent.invoke(
+            {
+                "messages": [
+                    {"role": "user", "content": f"Analyze this data:\n{file_text}"}
+                ]
+            }
+        )
 
         # Return the required data
         return response["structured_response"].model_dump()
@@ -103,29 +106,33 @@ def analyze_guidelines(uploaded_file: FileStorage) -> dict[str, Any]:
         return {
             "success": False,
             "message": "Error analyzing uploaded guidelines",
-            "error": str(e)
+            "error": str(e),
         }
 
 
 # Merge brand guidelines
-def merge_guidelines(generated_profile: dict, uploaded_analysis: dict) -> dict[str, Any]:
+def merge_guidelines(
+    generated_profile: dict, uploaded_analysis: dict
+) -> dict[str, Any]:
     try:
         # Invoke the agent
-        response = guideline_merging_agent.invoke({
-            "messages": [
-                {
-                    "role": "user",
-                    "content": f"""
+        response = guideline_merging_agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": f"""
                         Here are the two brand profiles:
                         1. AI-Generated Profile (based on a questionnaire):
                         {json.dumps(generated_profile, indent=2)}
 
                         2. Uploaded Brand Guidelines Profile (extracted from their official document):
                         {json.dumps(uploaded_analysis, indent=2)}
-                    """
-                }
-            ]
-        })
+                    """,
+                    }
+                ]
+            }
+        )
 
         # Return the required data
         return response["structured_response"].model_dump()
@@ -134,12 +141,14 @@ def merge_guidelines(generated_profile: dict, uploaded_analysis: dict) -> dict[s
         return {
             "success": False,
             "message": "Error merging brand profiles",
-            "error": str(e)
+            "error": str(e),
         }
 
 
-#Generate brand guidelines
-def generate_brand_guidelines(brand_profile: dict, uploaded_analysis: dict | None = None) -> str:
+# Generate brand guidelines
+def generate_brand_guidelines(
+    brand_profile: dict, uploaded_analysis: dict | None = None
+) -> str:
     try:
         if uploaded_analysis and "brand_voice" in uploaded_analysis:
             brand_profile = merge_guidelines(brand_profile, uploaded_analysis)
@@ -148,14 +157,24 @@ def generate_brand_guidelines(brand_profile: dict, uploaded_analysis: dict | Non
         if "success" in brand_profile and not brand_profile.get("success"):
             error_msg = brand_profile.get("error", "Unknown error")
             return f"Error generating brand guidelines: {error_msg}"
-        
+
         # Check if required keys exist
-        required_keys = ['brand_voice', 'color_palette',  'typeface', 'industry', 'target_audience', 'content_themes', 'posting_style']
+        required_keys = [
+            "brand_voice",
+            "color_palette",
+            "typeface",
+            "industry",
+            "target_audience",
+            "content_themes",
+            "posting_style",
+        ]
         missing_keys = [key for key in required_keys if key not in brand_profile]
-        
+
         if missing_keys:
-            return f"Error: Missing required brand profile data: {', '.join(missing_keys)}"
-        
+            return (
+                f"Error: Missing required brand profile data: {', '.join(missing_keys)}"
+            )
+
         guidelines: str = f"""
 # BRAND GUIDELINES
 

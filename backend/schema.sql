@@ -1,7 +1,6 @@
 DROP TABLE IF EXISTS companies CASCADE;
 DROP TABLE IF EXISTS brand_guidelines CASCADE;
 DROP TABLE IF EXISTS content_posts CASCADE;
-DROP TABLE IF EXISTS form_responses CASCADE;
 
 CREATE TABLE IF NOT EXISTS companies (
 	id SERIAL PRIMARY KEY,
@@ -19,16 +18,23 @@ CREATE TABLE IF NOT EXISTS companies (
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS brand_guidelines (
-	id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS brand_playbooks (
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 	company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-	content TEXT,
-	file_filename TEXT,
 	file_path TEXT,
+	file_uploaded_at TIMESTAMPTZ,
+	file_saved_at TIMESTAMPTZ,
 	file_analysis JSONB,
-	uploaded_at TIMESTAMPTZ,
-	generated_at TIMESTAMPTZ,
-	saved_at TIMESTAMPTZ,
+	analysis_generated_at TIMESTAMPTZ,
+	voice TEXT,
+	logos JSONB,
+	typography_direction TEXT,
+	headline_typeface TEXT,
+	body_typeface TEXT,
+	accent_typeface TEXT,
+	visual_style TEXT,
+	content_rules TEXT,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 	UNIQUE (company_id)
 );
 
@@ -43,24 +49,3 @@ CREATE TABLE IF NOT EXISTS content_posts (
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	updated_at TIMESTAMPTZ
 );
-
-CREATE TABLE IF NOT EXISTS form_responses (
-	id SERIAL PRIMARY KEY,
-	email TEXT NOT NULL,
-	business_name TEXT NOT NULL,
-	industry TEXT NOT NULL,
-	description TEXT NOT NULL,
-	target_audience TEXT,
-	brand_personality JSONB NOT NULL DEFAULT '[]',
-	budget TEXT,
-	platforms JSONB NOT NULL DEFAULT '[]',
-	submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Fast lookups by email (e.g. deduplication, profile fetch)
-CREATE INDEX IF NOT EXISTS idx_form_responses_email
-    ON form_responses (email);
-
--- Fast sorting by submission time
-CREATE INDEX IF NOT EXISTS idx_form_responses_submitted_at
-    ON form_responses (submitted_at DESC);
