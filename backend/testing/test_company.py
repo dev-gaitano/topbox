@@ -44,7 +44,7 @@ def test_company_requires_data():
 @pytest.fixture
 def data() -> dict[str, Any]:
     return {
-        "   BusinessName  ": "SpaceX",
+        "   businessName  ": "SpaceX",
         "logo": "https://logo.com/space.png",
         "industry": "  Aerospace  ",
         "email": "elon@spacex.com",
@@ -89,7 +89,7 @@ def test_to_db_params(data):
 def test_handle_request_data_with_lists():
     """Verify handle_request_data handles fields that are already lists"""
     list_data = {
-        "BusinessName": "List Co",
+        "businessName": "List Co",
         "logo": "logo.png",
         "industry": "testing",
         "email": "test@test.com",
@@ -100,7 +100,7 @@ def test_handle_request_data_with_lists():
         "personality": ["Friendly"],
         "tone": "Casual",
     }
-    
+
     company = Company.handle_request_data(list_data)
     assert company.color_palette == ["#000", "#fff"]
     assert company.main_competitors == ["Comp A", "Comp B"]

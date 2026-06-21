@@ -32,7 +32,7 @@ def test_insert_company_db_returns_none(mock_db_conn, client):
     response = client.post(
         "/api/companies",
         json={
-            "BusinessName": "Test DB Company",
+            "businessName": "Test DB Company",
             "logo": "test.png",
             "industry": "Testing",
             "email": "test@db.com",
@@ -64,7 +64,7 @@ def test_insert_company_success(mock_db_conn, client):
     response = client.post(
         "/api/companies",
         json={
-            "BusinessName": "Test DB Company",
+            "businessName": "Test DB Company",
             "logo": "test.png",
             "industry": "Testing",
             "email": "test@db.com",

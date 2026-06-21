@@ -67,7 +67,7 @@ class Company:
             return [v.strip() for v in raw.split(",") if v.strip()] if raw else []
 
         return cls(
-            name=clean("BusinessName"),
+            name=clean("businessName"),
             logo=clean("logo"),
             industry=clean("industry"),
             email=clean("email"),
@@ -76,7 +76,7 @@ class Company:
             color_palette=split_csv("colorPalette"),
             unique_value=clean("uniqueValue"),
             main_competitors=split_csv("mainCompetitors"),
-            personality=request_data.get("personality") or [],
+            personality=split_csv("personality"),
             tone=clean("tone"),
         )
 
