@@ -75,26 +75,10 @@ def get_companies() -> tuple[Response, int]:
                        FROM companies ORDER BY created_at;
                        """)
         rows = cursor.fetchall() or []
+        columns = [col[0] for col in cursor.description]
 
         # Store companies in a list of dicts
-        companies: list[dict[str, Any]] = [
-            {
-                "id": r[0],
-                "name": r[1],
-                "logo": r[2],
-                "industry": r[3],
-                "email": r[4],
-                "description": r[5],
-                "target_audience": r[6],
-                "color_palette": r[7],
-                "unique_value": r[8],
-                "main_competitors": r[9],
-                "personality": r[10],
-                "tone": r[11],
-                "createdAt": r[12].isoformat() if r[12] else None,
-            }
-            for r in rows
-        ]
+        companies: list[dict[str, Any]] = [dict(zip(columns, r)) for r in rows]
 
         return jsonify(companies), 200
 
@@ -243,7 +227,7 @@ def delete_company(company_id: int) -> tuple[Response, int]:
                     },
                 }
             ),
-            204,
+            200,
         )
 
     except Exception as e:
@@ -289,22 +273,10 @@ def get_company(company_id: int) -> tuple[Response, int]:
         if not row:
             return jsonify({"success": False, "message": "Company not found"}), 404
 
+        columns = [col[0] for col in cursor.description]
+
         # Store company data in a dict
-        company: dict[str, Any] = {
-            "id": row[0],
-            "name": row[1],
-            "logo": row[2],
-            "industry": row[3],
-            "email": row[4],
-            "description": row[5],
-            "target_audience": row[6],
-            "color_palette": row[7],
-            "unique_value": row[8],
-            "main_competitors": row[9],
-            "personality": row[10],
-            "tone": row[11],
-            "createdAt": row[12].isoformat() if row[11] else None,
-        }
+        company: dict[str, Any] = dict(zip(columns, row))
 
         return jsonify(company), 200
 
