@@ -59,6 +59,10 @@ class Company:
             return (data.get(key) or "").strip()
 
         def split_csv(key: str) -> list[str]:
+            value = data.get(key)
+            if isinstance(value, list):
+                return [str(v).strip() for v in value if str(v).strip()]
+
             raw = clean(key)
             return [v.strip() for v in raw.split(",") if v.strip()] if raw else []
 

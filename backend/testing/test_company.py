@@ -84,3 +84,24 @@ def test_to_db_params(data):
     assert db_params[8] == "[]"
     assert db_params[9] == '["Bold", "Innovative", "Visionary"]'
     assert db_params[10] == "Inspirational"
+
+
+def test_handle_request_data_with_lists():
+    """Verify handle_request_data handles fields that are already lists"""
+    list_data = {
+        "BusinessName": "List Co",
+        "logo": "logo.png",
+        "industry": "testing",
+        "email": "test@test.com",
+        "description": "desc",
+        "targetAudience": "devs",
+        "colorPalette": ["#000", "#fff"],
+        "mainCompetitors": ["Comp A", "Comp B"],
+        "personality": ["Friendly"],
+        "tone": "Casual",
+    }
+    
+    company = Company.handle_request_data(list_data)
+    assert company.color_palette == ["#000", "#fff"]
+    assert company.main_competitors == ["Comp A", "Comp B"]
+    assert company.personality == ["Friendly"]
