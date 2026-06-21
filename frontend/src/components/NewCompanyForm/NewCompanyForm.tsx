@@ -102,11 +102,11 @@ function NewCompanyForm({
             value={formData.logo}
             onChange={handleChange}
           />
-          <select
+          <input
             name="industry"
             value={formData.industry}
             onChange={handleChange}
-          ></select>
+          />
           <input
             name="email"
             placeholder="Email"

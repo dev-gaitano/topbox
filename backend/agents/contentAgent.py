@@ -1,12 +1,17 @@
-from dotenv import load_dotenv
-from typing import Any
+# Builtin
 import json
+from typing import Any
 
-from pydantic import BaseModel, Field
+# Third-party
+from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain_community.utilities.dalle_image_generator import DallEAPIWrapper
+from pydantic import BaseModel, Field
 
-from agents.agentSetup import model, image_analysis_model, CAPTION_GEN_PROMPT, IMAGE_ANALYSIS_PROMPT, POST_IMAGE_PROMPT_GEN
+# Custom
+from agents.agentSetup import (CAPTION_GEN_PROMPT, IMAGE_ANALYSIS_PROMPT,
+                               POST_IMAGE_PROMPT_GEN, image_analysis_model,
+                               model)
 from agents.responseModels import ImageAnalysisResponseFormat
 
 
