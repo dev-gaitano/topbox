@@ -3,7 +3,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from databaseConnection import db_connection
 from main import app
 
 
