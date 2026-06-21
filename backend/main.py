@@ -1,10 +1,8 @@
-# Builtin
 import os
 import json
 import traceback
 from typing import Any
 
-# Third-party
 from flask import Flask, Response, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -12,10 +10,18 @@ from werkzeug.utils import secure_filename
 import cloudinary
 import cloudinary.uploader
 
-# Custom
 from databaseConnection import db_connection
-from agents.brandAgent import analyze_brand, analyze_guidelines, generate_brand_guidelines
-from agents.contentAgent import analyze_images, generate_caption, generate_image_prompt, generate_image
+from agents.brandAgent import (
+    analyze_brand,
+    analyze_guidelines,
+    generate_brand_guidelines,
+)
+from agents.contentAgent import (
+    analyze_images,
+    generate_caption,
+    generate_image_prompt,
+    generate_image,
+)
 from models.company import Company
 
 # Load environment variables
@@ -25,13 +31,15 @@ load_dotenv()
 app = Flask(__name__)
 
 # Setup CORS
-CORS(app, resources={
+CORS(
+    app,
+    resources={
         r"/api/*": {
             "origins": [
-            "http://localhost:3000", # Local
-            "https://topbox-mvp-git-dev-dev-gaitanos-projects.vercel.app", # dev
-            "https://topbox-mvp-git-api-integration-dev-gaitanos-projects.vercel.app",
-            "https://topbox-agency.vercel.app" # Prod
+                "http://localhost:3000",  # Local
+                "https://topbox-mvp-git-dev-dev-gaitanos-projects.vercel.app",  # dev
+                "https://topbox-mvp-git-api-integration-dev-gaitanos-projects.vercel.app",
+                "https://topbox-agency.vercel.app",  # Prod
             ],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
@@ -44,7 +52,7 @@ CORS(app, resources={
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
 )
 
 
@@ -92,11 +100,16 @@ def get_companies() -> tuple[Response, int]:
 
     except Exception as e:
         print(f"Error fetching companies: {e}")
-        return jsonify({
-            "success": False,
-            "message": "Failed to fetch companies",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to fetch companies",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
     finally:
         if cursor:
@@ -117,18 +130,12 @@ def create_company() -> tuple[Response, int]:
         company_data: dict[str, Any] | None = request.get_json(silent=True)
 
         if not company_data:
-            return jsonify({
-                "success": False,
-                "message": "No JSON data provided"
-            }), 400
+            return jsonify({"success": False, "message": "No JSON data provided"}), 400
 
         try:
             company = Company.handle_request_data(company_data)
         except (TypeError, ValueError) as e:
-            return jsonify({
-                "success": False,
-                "message": str(e)
-            }), 400
+            return jsonify({"success": False, "message": str(e)}), 400
 
         # Insert company to database
         cursor.execute(
@@ -138,37 +145,53 @@ def create_company() -> tuple[Response, int]:
                                    personality, tone)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s)
             RETURNING id, name, created_at;
-            """, company.to_db_params(),
+            """,
+            company.to_db_params(),
         )
         row = cursor.fetchone()
         conn.commit()
 
         # Check if row was returned
         if not row:
-            return jsonify({
-                "success": False,
-                "message": "Failed to return created company data",
-            }), 500
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Failed to return created company data",
+                    }
+                ),
+                500,
+            )
 
-        return jsonify({
-            "success": True,
-            "message": "Company created successfully",
-            "data": {
-                "id": row[0],
-                "name": row[1],
-                "created_at": row[2].isoformat() if row[2] else None,
-            }
-        }), 201
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "message": "Company created successfully",
+                    "data": {
+                        "id": row[0],
+                        "name": row[1],
+                        "created_at": row[2].isoformat() if row[2] else None,
+                    },
+                }
+            ),
+            201,
+        )
 
     except Exception as e:
         if conn:
             conn.rollback()
         print(f"Error creating company: {e}")
-        return jsonify({
-            "success": False,
-            "message": "Failed to create company",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to create company",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
     finally:
         if cursor:
@@ -191,35 +214,50 @@ def delete_company(company_id: int) -> tuple[Response, int]:
             DELETE FROM companies WHERE id = %s
             RETURNING id, name, created_at
             """,
-            (company_id,)
+            (company_id,),
         )
         row = cursor.fetchone()
         conn.commit()
 
         # Check if row was returned
         if not row:
-            return jsonify({
-                "success": False,
-                "message": "Failed to return deleted company data",
-            }), 500
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Failed to return deleted company data",
+                    }
+                ),
+                500,
+            )
 
-        return jsonify({
-            "success": True,
-            "message": "Company deleted successfully",
-            "data": {
-                "id": row[0],
-                "name": row[1],
-                "createdAt": row[2].isoformat() if row[2] else None,
-            }
-        }), 204
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "message": "Company deleted successfully",
+                    "data": {
+                        "id": row[0],
+                        "name": row[1],
+                        "createdAt": row[2].isoformat() if row[2] else None,
+                    },
+                }
+            ),
+            204,
+        )
 
     except Exception as e:
         print(f"Error deleting company: {e}")
-        return jsonify({
-            "success": False,
-            "message": "Failed to delete company",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to delete company",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
     finally:
         if cursor:
             cursor.close()
@@ -249,10 +287,7 @@ def get_company(company_id: int) -> tuple[Response, int]:
         row = cursor.fetchone()
 
         if not row:
-            return jsonify({
-                "success": False,
-                "message": "Company not found"
-            }), 404
+            return jsonify({"success": False, "message": "Company not found"}), 404
 
         # Store company data in a dict
         company: dict[str, Any] = {
@@ -275,11 +310,16 @@ def get_company(company_id: int) -> tuple[Response, int]:
 
     except Exception as e:
         print(f"Error fetching company: {e}")
-        return jsonify({
-            "success": False,
-            "message": "Failed to fetch company",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to fetch company",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
     finally:
         if cursor:
             cursor.close()
@@ -299,51 +339,55 @@ def update_company(company_id) -> tuple[Response, int]:
         company_data: dict[str, Any] | None = request.get_json(silent=True)
 
         if not company_data:
-            return jsonify({
-                "success": False,
-                "message": "No JSON data provided"
-            }), 400
+            return jsonify({"success": False, "message": "No JSON data provided"}), 400
 
         try:
             company = Company.handle_request_data(company_data)
         except (TypeError, ValueError) as e:
-            return jsonify({
-                "success": False,
-                "message": str(e)
-            }), 400
+            return jsonify({"success": False, "message": str(e)}), 400
 
         # Update company in database
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE companies
             SET name = %s, logo = %s, industry = %s, email = %s, description = %s,
                        target_audience = %s, color_palette = %s::jsonb, unique_value = %s,
                        main_competitors = %s::jsonb, personality = %s::jsonb, tone = %s
             WHERE id = %s
             RETURNING id, name, created_at
-        """, company.to_db_params() + (company_id,))
+        """,
+            company.to_db_params() + (company_id,),
+        )
 
         row = cursor.fetchone()
         conn.commit()
 
         if not row:
-            return jsonify({
-                "success": False,
-                "message": "Company not found"
-            }), 404
+            return jsonify({"success": False, "message": "Company not found"}), 404
 
-        return jsonify({
-            "id": row[0],
-            "name": row[1],
-            "createdAt": row[2].isoformat() if row[2] else None,
-        }), 200
+        return (
+            jsonify(
+                {
+                    "id": row[0],
+                    "name": row[1],
+                    "createdAt": row[2].isoformat() if row[2] else None,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         print(f"Error updating company: {e}")
-        return jsonify({
-            "success": False,
-            "message": "Failed to update company",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to update company",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
     finally:
         if cursor:
             cursor.close()
@@ -361,38 +405,34 @@ def upload_brand_guidelines() -> tuple[Response, int]:
     try:
         # Check if file exists in incoming request
         if "file" not in request.files:
-            return jsonify({
-                "success": False,
-                "message": "Missing file"
-            }), 400
+            return jsonify({"success": False, "message": "Missing file"}), 400
 
         # Get the file and company ID from request
         file = request.files["file"]
         company_id_raw = (request.form.get("companyId") or "").strip()
 
         if not company_id_raw.isdigit():
-            return jsonify({
-                "success": False,
-                "message": "Invalid companyId"
-            }), 400
+            return jsonify({"success": False, "message": "Invalid companyId"}), 400
         company_id = int(company_id_raw)
 
         # Check if file was selected
         if not file.filename:
-            return jsonify({
-                "success": False,
-                "message": "Empty filename"
-            }), 400
+            return jsonify({"success": False, "message": "Empty filename"}), 400
 
         filename = secure_filename(file.filename)
         uploaded_analysis = analyze_guidelines(file)
 
         if uploaded_analysis.get("success") is False:
-            return jsonify({
-                "success": False,
-                "message": "Guidelines analysis failed",
-                "error": uploaded_analysis.get("error")
-            }), 400
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Guidelines analysis failed",
+                        "error": uploaded_analysis.get("error"),
+                    }
+                ),
+                400,
+            )
 
         # Seek back to start of file
         file.stream.seek(0)
@@ -402,7 +442,7 @@ def upload_brand_guidelines() -> tuple[Response, int]:
             file,
             folder=f"uploaded-brand-guidelines/{company_id}",
             public_id=filename.rsplit(".", 1)[0],
-            resource_type="auto"
+            resource_type="auto",
         )
 
         file_url = upload_result["secure_url"]
@@ -426,22 +466,30 @@ def upload_brand_guidelines() -> tuple[Response, int]:
         )
         conn.commit()
 
-        return jsonify(
-            {
-                "success": True,
-                "message": "Guidelines uploaded successfully",
-                "fileUrl": file_url,
-            }
-        ), 201
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "message": "Guidelines uploaded successfully",
+                    "fileUrl": file_url,
+                }
+            ),
+            201,
+        )
 
     except Exception as e:
         if conn:
             conn.rollback()
-        return jsonify({
-            "success": False,
-            "message": "Failed to upload guidelines",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to upload guidelines",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
     finally:
         if cursor:
@@ -460,25 +508,30 @@ def generate_guidelines() -> tuple[Response, int]:
 
         # Get company data from questionare
         data = request.get_json()
-        company_id = data.get('companyId')
-        questionnaire = data.get('questionnaire', {})
-        
+        company_id = data.get("companyId")
+        questionnaire = data.get("questionnaire", {})
+
         # Analyze brand and generate guidelines
         brand_profile = analyze_brand(questionnaire)
         print(f"Brand profile result: {brand_profile}")
 
         # Check if analyze_brand returned an error
         if brand_profile.get("success") is False:
-            return jsonify({
-                "success": False,
-                "message": "Failed to analyze brand",
-                "error": brand_profile.get("error", "Unknown error")
-            }), 400
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Failed to analyze brand",
+                        "error": brand_profile.get("error", "Unknown error"),
+                    }
+                ),
+                400,
+            )
 
         # Fetch uploaded file analysis if it exists
         cursor.execute(
             "SELECT file_analysis FROM brand_guidelines WHERE company_id = %s;",
-            (company_id,)
+            (company_id,),
         )
         row = cursor.fetchone()
         uploaded_analysis = row[0] if row and row[0] else None
@@ -499,22 +552,32 @@ def generate_guidelines() -> tuple[Response, int]:
         )
         conn.commit()
 
-        return jsonify({
-            "success": True,
-            "message": "Guidelines generated successfully",
-            "content": brand_guidelines,
-            "profile": brand_profile,
-        }), 201
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "message": "Guidelines generated successfully",
+                    "content": brand_guidelines,
+                    "profile": brand_profile,
+                }
+            ),
+            201,
+        )
 
     except Exception as e:
         if conn:
             conn.rollback()
         print(f"Failed to generate guidelines: {str(e)}")
-        return jsonify({
-            "success": False,
-            "message": "Failed to generate guidelines",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to generate guidelines",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
     finally:
         if cursor:
@@ -537,17 +600,11 @@ def save_brand_guidelines() -> tuple[Response, int]:
 
         # Validate the company_id data type
         if not isinstance(company_id, int) or company_id <= 0:
-            return jsonify({
-                "success": False,
-                "message": "Invalid companyId"
-            }), 400
+            return jsonify({"success": False, "message": "Invalid companyId"}), 400
 
         # Check if content is available
         if not content:
-            return jsonify({
-                "success": False,
-                "message": "Missing content"
-            }), 400
+            return jsonify({"success": False, "message": "Missing content"}), 400
 
         # Insert company guidelines into database
         cursor.execute(
@@ -563,19 +620,24 @@ def save_brand_guidelines() -> tuple[Response, int]:
         )
         conn.commit()
 
-        return jsonify({
-            "success": True,
-            "message": "Guidelines saved successfully"
-        }), 201
+        return (
+            jsonify({"success": True, "message": "Guidelines saved successfully"}),
+            201,
+        )
 
     except Exception as e:
         if conn:
             conn.rollback()
-        return jsonify({
-            "success": False,
-            "message": "Failed to save guidelines",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to save guidelines",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
     finally:
         if cursor:
@@ -601,12 +663,17 @@ def get_brand_guidelines(company_id: int) -> tuple[Response, int]:
 
         # Check if guidelines exist
         if not row or not row[0]:
-            return jsonify({
-                "success": False,
-                "message": "Company guidelines/content not found",
-                "content": None,
-                "profile": None
-            }), 200
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Company guidelines/content not found",
+                        "content": None,
+                        "profile": None,
+                    }
+                ),
+                200,
+            )
 
         content = row[0]
         file_analysis_raw = row[1]
@@ -629,19 +696,29 @@ def get_brand_guidelines(company_id: int) -> tuple[Response, int]:
         except Exception:
             profile = None
 
-        return jsonify({
-            "success": True,
-            "message": "Company guidelines fetched successfully",
-            "content": content,
-            "profile": profile,
-        }), 200
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "message": "Company guidelines fetched successfully",
+                    "content": content,
+                    "profile": profile,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "message": "Failed to fetch guidelines",
-            "error": str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to fetch guidelines",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
     finally:
         if cursor:
@@ -660,7 +737,7 @@ def upload_images() -> tuple[Response, int]:
 
     # Get reference images
     ref_imgs = request.files.getlist("referenceImages")
-     
+
     if not ref_imgs or all(not f.filename for f in ref_imgs):
         return jsonify({"success": False, "message": "No images provided"}), 400
 
@@ -669,20 +746,22 @@ def upload_images() -> tuple[Response, int]:
     for f in ref_imgs:
         if not f or not f.filename:
             continue
-        result = cloudinary.uploader.upload(
-            f,
-            folder=f"reference-images/{company_id}"
-        )
+        result = cloudinary.uploader.upload(f, folder=f"reference-images/{company_id}")
         uploaded_urls.append(result["secure_url"])
 
-    return jsonify({
-        "success": True,
-        "message": "Images uploaded successfully",
-        "urls": uploaded_urls
-    }), 200
+    return (
+        jsonify(
+            {
+                "success": True,
+                "message": "Images uploaded successfully",
+                "urls": uploaded_urls,
+            }
+        ),
+        200,
+    )
 
 
-#Analyze uploaded images
+# Analyze uploaded images
 @app.route("/api/content/analyze_images", methods=["POST"])
 def analyze_images_route() -> tuple[Response, int]:
     # Get image data
@@ -698,11 +777,16 @@ def analyze_images_route() -> tuple[Response, int]:
         single_analysis: dict = analyze_images([url])
         analyses.append(single_analysis)
 
-    return jsonify({
-        "success": True,
-        "message": "Images analyzed successfully",
-        "analyses": analyses
-    }), 200
+    return (
+        jsonify(
+            {
+                "success": True,
+                "message": "Images analyzed successfully",
+                "analyses": analyses,
+            }
+        ),
+        200,
+    )
 
 
 # Create new content
@@ -735,13 +819,18 @@ def create_content() -> tuple[Response, int]:
         try:
             conn = db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT content FROM brand_guidelines WHERE company_id = %s;", (company_id,))
+            cursor.execute(
+                "SELECT content FROM brand_guidelines WHERE company_id = %s;",
+                (company_id,),
+            )
             row = cursor.fetchone()
             if row and row[0]:
                 brand_guidelines = row[0].strip()
         finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
             conn = cursor = None
 
         # Generate a caption + prompt for every selected platform
@@ -755,13 +844,26 @@ def create_content() -> tuple[Response, int]:
             )
 
             if caption_data.get("success") is False:
-                return jsonify({
-                    "success": False,
-                    "message": f"Failed to generate caption for {platform}: {caption_data.get('error', 'Unknown error')}"
-                }), 500
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": f"Failed to generate caption for {platform}: {caption_data.get('error', 'Unknown error')}",
+                        }
+                    ),
+                    500,
+                )
 
             if not caption_data.get("caption"):
-                return jsonify({"success": False, "message": f"Caption generation returned empty result for {platform}"}), 500
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": f"Caption generation returned empty result for {platform}",
+                        }
+                    ),
+                    500,
+                )
 
             prompt = generate_image_prompt(
                 brand_guidelines=brand_guidelines,
@@ -777,14 +879,28 @@ def create_content() -> tuple[Response, int]:
             results.append({"platform": platform, "caption": caption, "prompt": prompt})
 
         # Return to frontend for user review — not saved yet
-        return jsonify({
-            "success": True,
-            "results": results,
-        }), 200
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "results": results,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         print(traceback.format_exc())
-        return jsonify({"success": False, "message": "Failed to create content", "error": str(e)}), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to create content",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
 
 # GET latest content
@@ -795,10 +911,7 @@ def latest_content() -> Response:
     try:
         company_id_raw = (request.args.get("companyId") or "").strip()
         if not company_id_raw.isdigit():
-            return jsonify({
-                "success": False,
-                "message": "Invalid companyId"
-                })
+            return jsonify({"success": False, "message": "Invalid companyId"})
         company_id = int(company_id_raw)
 
         conn = db_connection()
@@ -845,11 +958,13 @@ def latest_content() -> Response:
         )
 
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "message": "Failed to fetch latest content",
-            "error": str(e)
-        })
+        return jsonify(
+            {
+                "success": False,
+                "message": "Failed to fetch latest content",
+                "error": str(e),
+            }
+        )
 
     finally:
         if cursor:
@@ -913,11 +1028,22 @@ def list_content() -> tuple[Response, int]:
 
     except Exception as e:
         print(traceback.format_exc())
-        return jsonify({"success": False, "message": "Failed to fetch content list", "error": str(e)}), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to fetch content list",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
     finally:
-        if cursor: cursor.close()
-        if conn: conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 # =====================================================
@@ -940,7 +1066,10 @@ def save_content() -> tuple[Response, int]:
         if not isinstance(company_id, int) or company_id <= 0:
             return jsonify({"success": False, "message": "Invalid companyId"}), 400
         if not topic or not platform:
-            return jsonify({"success": False, "message": "Missing topic or platform"}), 400
+            return (
+                jsonify({"success": False, "message": "Missing topic or platform"}),
+                400,
+            )
         if not prompt:
             return jsonify({"success": False, "message": "Missing prompt"}), 400
 
@@ -953,7 +1082,14 @@ def save_content() -> tuple[Response, int]:
             VALUES (%s, %s, %s, %s::jsonb, %s, %s)
             RETURNING id, company_id, topic, platform, reference_image_urls::text, prompt, caption, created_at, updated_at;
             """,
-            (company_id, topic, platform, json.dumps(reference_image_urls), prompt, caption),
+            (
+                company_id,
+                topic,
+                platform,
+                json.dumps(reference_image_urls),
+                prompt,
+                caption,
+            ),
         )
         saved = cursor.fetchone()
         conn.commit()
@@ -961,26 +1097,39 @@ def save_content() -> tuple[Response, int]:
         if not saved:
             return jsonify({"success": False, "message": "Failed to save content"}), 500
 
-        return jsonify({
-            "id": saved[0],
-            "companyId": saved[1],
-            "topic": saved[2],
-            "platform": saved[3],
-            "referenceImageUrls": json.loads(saved[4] or "[]"),
-            "prompt": saved[5] or "",
-            "caption": saved[6] or "",
-            "createdAt": saved[7].isoformat() if saved[7] else None,
-            "updatedAt": saved[8].isoformat() if saved[8] else None,
-        }), 201
+        return (
+            jsonify(
+                {
+                    "id": saved[0],
+                    "companyId": saved[1],
+                    "topic": saved[2],
+                    "platform": saved[3],
+                    "referenceImageUrls": json.loads(saved[4] or "[]"),
+                    "prompt": saved[5] or "",
+                    "caption": saved[6] or "",
+                    "createdAt": saved[7].isoformat() if saved[7] else None,
+                    "updatedAt": saved[8].isoformat() if saved[8] else None,
+                }
+            ),
+            201,
+        )
 
     except Exception as e:
-        if conn: conn.rollback()
+        if conn:
+            conn.rollback()
         print(traceback.format_exc())
-        return jsonify({"success": False, "message": "Failed to save content", "error": str(e)}), 500
+        return (
+            jsonify(
+                {"success": False, "message": "Failed to save content", "error": str(e)}
+            ),
+            500,
+        )
 
     finally:
-        if cursor: cursor.close()
-        if conn: conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 # =====================================================
@@ -1005,7 +1154,16 @@ def generate_image_route() -> tuple[Response, int]:
 
     except Exception as e:
         print(traceback.format_exc())
-        return jsonify({"success": False, "message": "Failed to generate image", "error": str(e)}), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to generate image",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
 
 if __name__ == "__main__":
