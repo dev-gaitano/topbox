@@ -368,7 +368,7 @@ def update_company(company_id) -> tuple[Response, int]:
 
 
 # =====================================================
-# BRAND GUIDELINES
+# BRAND PLAYBOOKS/GUIDELINES
 # =====================================================
 @app.route("/api/brand-guidelines/upload", methods=["POST"])
 def upload_brand_guidelines() -> tuple[Response, int]:
@@ -478,7 +478,7 @@ def generate_guidelines() -> tuple[Response, int]:
             conn.close()
 
 
-@app.route("/api/brand-guidelines/save", methods=["POST"])
+@app.route("/api/brand-playbooks/save", methods=["POST"])
 def save_brand_guidelines() -> tuple[Response, int]:
     conn = cursor = None
 
@@ -538,7 +538,7 @@ def save_brand_guidelines() -> tuple[Response, int]:
             conn.close()
 
 
-@app.route("/api/brand-guidelines/<int:company_id>", methods=["GET"])
+@app.route("/api/brand-playbooks/<int:company_id>", methods=["GET"])
 def get_brand_guidelines(company_id: int) -> tuple[Response, int]:
     conn = cursor = None
 
@@ -865,9 +865,6 @@ def latest_content() -> Response:
             conn.close()
 
 
-# =====================================================
-# CONTENT LIST
-# =====================================================
 @app.route("/api/content/list", methods=["GET"])
 def list_content() -> tuple[Response, int]:
     conn = cursor = None
@@ -938,9 +935,6 @@ def list_content() -> tuple[Response, int]:
             conn.close()
 
 
-# =====================================================
-# CONTENT SAVE
-# =====================================================
 @app.route("/api/content/save", methods=["POST"])
 def save_content() -> tuple[Response, int]:
     conn = cursor = None
