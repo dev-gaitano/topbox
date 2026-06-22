@@ -10,17 +10,16 @@ class BrandGuidelines:
         website: str,
         visual_style_direction: str,
         color_palette: list[str],
-        color_direction: dict[str, str],  # key: color,value: usage
+        color_direction: dict[str, str],
         typography: list[str],
-        typography_direction: str,  # include font and weight direction
+        typography_direction: str,
         ui_ad_social_media_direction: str,
         imagery_direction: str,
         target_audience: str,
         audience_interests: list[str],
         audience_pain_points: list[str],
-        unique_value: str,  # and how it tackles the audience_pain_points
+        unique_value: str,
         content_pillars: tuple[tuple[str]],
-        # parent tuple ordered on importance (pillar, explanation)
         social_tone: str,
     ) -> None:
         self.brand_name = brand_name
@@ -44,3 +43,4 @@ class BrandGuidelines:
         self.content_pillars = content_pillars
         self.social_tone = social_tone
         self.__inferred_fields: list[str] = []
+        self.__field_confidence: dict[str, float] = {}
