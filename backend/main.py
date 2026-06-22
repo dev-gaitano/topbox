@@ -7,7 +7,6 @@ from typing import Any
 from flask import Flask, Response, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
 import cloudinary
 import cloudinary.uploader
 
@@ -23,7 +22,7 @@ from agents.contentAgent import (
     generate_image_prompt,
     generate_image,
 )
-from models.company import Company
+from models import Company
 
 # Load environment variables
 load_dotenv()
