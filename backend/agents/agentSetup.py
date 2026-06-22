@@ -1,4 +1,3 @@
-# Third-party
 from langchain_openai import ChatOpenAI
 
 # Define Model
