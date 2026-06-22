@@ -89,7 +89,6 @@ def get_companies() -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to fetch companies",
-                    "error": str(e),
                 }
             ),
             500,
@@ -171,7 +170,6 @@ def create_company() -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to create company",
-                    "error": str(e),
                 }
             ),
             500,
@@ -237,7 +235,6 @@ def delete_company(company_id: int) -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to delete company",
-                    "error": str(e),
                 }
             ),
             500,
@@ -287,7 +284,6 @@ def get_company(company_id: int) -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to fetch company",
-                    "error": str(e),
                 }
             ),
             500,
@@ -316,7 +312,11 @@ def update_company(company_id) -> tuple[Response, int]:
         try:
             company = Company.handle_request_data(company_data)
         except (TypeError, ValueError) as e:
-            return jsonify({"success": False, "message": str(e)}), 400
+            print(f"Error handling company data: {str(e)}")
+            return (
+                jsonify({"success": False, "message": "Error handling company data"}),
+                400,
+            )
 
         # Update company in database
         cursor.execute(
@@ -355,7 +355,6 @@ def update_company(company_id) -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to update company",
-                    "error": str(e),
                 }
             ),
             500,
