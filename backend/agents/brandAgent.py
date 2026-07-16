@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from werkzeug.datastructures import FileStorage
 
 # Custom
-from agents.agentSetup import BRAND_ANALYSIS_PROMPT, GUIDELINE_MERGING_PROMPT, model
+from agents import BRAND_ANALYSIS_PROMPT, GUIDELINE_MERGING_PROMPT, model
 
 # Setup environment files
 load_dotenv()

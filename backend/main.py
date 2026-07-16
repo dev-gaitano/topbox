@@ -1,12 +1,12 @@
 import os
 import json
+from pathlib import Path
 import traceback
 from typing import Any
 
 from flask import Flask, Response, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
 import cloudinary
 import cloudinary.uploader
 
@@ -22,7 +22,7 @@ from agents.contentAgent import (
     generate_image_prompt,
     generate_image,
 )
-from models.company import Company
+from models import Company
 
 # Load environment variables
 load_dotenv()
@@ -89,7 +89,6 @@ def get_companies() -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to fetch companies",
-                    "error": str(e),
                 }
             ),
             500,
@@ -171,7 +170,6 @@ def create_company() -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to create company",
-                    "error": str(e),
                 }
             ),
             500,
@@ -237,7 +235,6 @@ def delete_company(company_id: int) -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to delete company",
-                    "error": str(e),
                 }
             ),
             500,
@@ -287,7 +284,6 @@ def get_company(company_id: int) -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to fetch company",
-                    "error": str(e),
                 }
             ),
             500,
@@ -316,7 +312,11 @@ def update_company(company_id) -> tuple[Response, int]:
         try:
             company = Company.handle_request_data(company_data)
         except (TypeError, ValueError) as e:
-            return jsonify({"success": False, "message": str(e)}), 400
+            print(f"Error handling company data: {str(e)}")
+            return (
+                jsonify({"success": False, "message": "Error handling company data"}),
+                400,
+            )
 
         # Update company in database
         cursor.execute(
@@ -355,7 +355,6 @@ def update_company(company_id) -> tuple[Response, int]:
                 {
                     "success": False,
                     "message": "Failed to update company",
-                    "error": str(e),
                 }
             ),
             500,
@@ -368,109 +367,29 @@ def update_company(company_id) -> tuple[Response, int]:
 
 
 # =====================================================
-# BRAND GUIDELINES
+# BRAND PLAYBOOKS/GUIDELINES
 # =====================================================
 @app.route("/api/brand-guidelines/upload", methods=["POST"])
 def upload_brand_guidelines() -> tuple[Response, int]:
-    conn = cursor = None
+    file_data = request.files.get("file")
 
-    try:
-        # Check if file exists in incoming request
-        if "file" not in request.files:
-            return jsonify({"success": False, "message": "Missing file"}), 400
+    if not file_data:
+        return (jsonify({"success": False, "message": "No file data provided"}), 400)
 
-        # Get the file and company ID from request
-        file = request.files["file"]
-        company_id_raw = (request.form.get("companyId") or "").strip()
+    filename = Path(file_data.filename)
 
-        if not company_id_raw.isdigit():
-            return jsonify({"success": False, "message": "Invalid companyId"}), 400
-        company_id = int(company_id_raw)
+    if Path(filename).suffix.lower() != ".pdf":
+        return(jsonify({"success": False, "message": "File has to be a pdf"}), 400)
 
-        # Check if file was selected
-        if not file.filename:
-            return jsonify({"success": False, "message": "Empty filename"}), 400
+    file_data.seek(0, 2)   # seek to end of the stream
+    file_size = file_data.tell() # position = number of bytes
+    file_data.seek(0)       # rewind so the file can still be read
 
-        filename = secure_filename(file.filename)
-        uploaded_analysis = analyze_guidelines(file)
-
-        if uploaded_analysis.get("success") is False:
-            return (
-                jsonify(
-                    {
-                        "success": False,
-                        "message": "Guidelines analysis failed",
-                        "error": uploaded_analysis.get("error"),
-                    }
-                ),
-                400,
-            )
-
-        # Seek back to start of file
-        file.stream.seek(0)
-
-        # Save uploaded file to cloudinary
-        upload_result = cloudinary.uploader.upload(
-            file,
-            folder=f"uploaded-brand-guidelines/{company_id}",
-            public_id=filename.rsplit(".", 1)[0],
-            resource_type="auto",
-        )
-
-        file_url = upload_result["secure_url"]
-
-        conn = db_connection()
-        cursor = conn.cursor()
-
-        # Save uploaded file data to database
-        cursor.execute(
-            """
-            INSERT INTO brand_guidelines (company_id, file_filename, file_path,
-                                          file_analysis, uploaded_at)
-            VALUES (%s, %s, %s, %s, NOW())
-            ON CONFLICT (company_id)
-            DO UPDATE SET
-                file_filename = EXCLUDED.file_filename,
-                file_path = EXCLUDED.file_path,
-                uploaded_at = EXCLUDED.uploaded_at;
-            """,
-            (company_id, filename, file_url, json.dumps(uploaded_analysis)),
-        )
-        conn.commit()
-
-        return (
-            jsonify(
-                {
-                    "success": True,
-                    "message": "Guidelines uploaded successfully",
-                    "fileUrl": file_url,
-                }
-            ),
-            201,
-        )
-
-    except Exception as e:
-        if conn:
-            conn.rollback()
-        return (
-            jsonify(
-                {
-                    "success": False,
-                    "message": "Failed to upload guidelines",
-                    "error": str(e),
-                }
-            ),
-            500,
-        )
-
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+    if file_size > 10 * 1024 * 1024:
+        return(jsonify({"success": False, "message": "File is too large"}), 413)
 
 
-@app.route("/api/brand-guidelines/generate", methods=["POST"])
+@app.route("/api/brand-playbooks/generate", methods=["POST"])
 def generate_guidelines() -> tuple[Response, int]:
     conn = cursor = None
 
@@ -558,7 +477,7 @@ def generate_guidelines() -> tuple[Response, int]:
             conn.close()
 
 
-@app.route("/api/brand-guidelines/save", methods=["POST"])
+@app.route("/api/brand-playbooks/save", methods=["POST"])
 def save_brand_guidelines() -> tuple[Response, int]:
     conn = cursor = None
 
@@ -618,7 +537,7 @@ def save_brand_guidelines() -> tuple[Response, int]:
             conn.close()
 
 
-@app.route("/api/brand-guidelines/<int:company_id>", methods=["GET"])
+@app.route("/api/brand-playbooks/<int:company_id>", methods=["GET"])
 def get_brand_guidelines(company_id: int) -> tuple[Response, int]:
     conn = cursor = None
 
@@ -945,9 +864,6 @@ def latest_content() -> Response:
             conn.close()
 
 
-# =====================================================
-# CONTENT LIST
-# =====================================================
 @app.route("/api/content/list", methods=["GET"])
 def list_content() -> tuple[Response, int]:
     conn = cursor = None
@@ -1018,9 +934,6 @@ def list_content() -> tuple[Response, int]:
             conn.close()
 
 
-# =====================================================
-# CONTENT SAVE
-# =====================================================
 @app.route("/api/content/save", methods=["POST"])
 def save_content() -> tuple[Response, int]:
     conn = cursor = None

@@ -1,13 +1,13 @@
-# Builtin
 from typing import Optional
 
-# Third-party
 from pydantic import BaseModel, Field
+
 
 class Metadata(BaseModel):
     confidence_score: str
     image_type: str
     primary_purpose: str
+
 
 class Composition(BaseModel):
     rule_applied: str
@@ -17,11 +17,13 @@ class Composition(BaseModel):
     visual_hierarchy: str
     balance: str
 
+
 class DominantColor(BaseModel):
     color: str
     hex: str
     percentage: str
     role: str
+
 
 class ColorProfile(BaseModel):
     dominant_colors: list[DominantColor]
@@ -30,15 +32,18 @@ class ColorProfile(BaseModel):
     saturation: str
     contrast: str
 
+
 class Shadows(BaseModel):
     type: str
     density: str
     placement: str
     length: str
 
+
 class Highlights(BaseModel):
     treatment: str
     placement: str
+
 
 class Lighting(BaseModel):
     type: str
@@ -54,6 +59,7 @@ class Lighting(BaseModel):
     ambient_fill: str
     light_temperature: str
 
+
 class TechnicalSpecs(BaseModel):
     medium: str
     style: str
@@ -63,6 +69,7 @@ class TechnicalSpecs(BaseModel):
     depth_of_field: str
     perspective: str
 
+
 class ArtisticElements(BaseModel):
     genre: str
     influences: list[str]
@@ -70,16 +77,19 @@ class ArtisticElements(BaseModel):
     atmosphere: str
     visual_style: str
 
+
 class Font(BaseModel):
     type: str
     weight: str
     characteristics: str
+
 
 class Typography(BaseModel):
     present: bool
     fonts: list[Font]
     placement: str
     integration: str
+
 
 class FacialExpression(BaseModel):
     mouth: str
@@ -88,6 +98,7 @@ class FacialExpression(BaseModel):
     eyebrows: str
     overall_emotion: str
     authenticity: str
+
 
 class Hair(BaseModel):
     length: str
@@ -101,6 +112,7 @@ class Hair(BaseModel):
     volume: str
     details: str
 
+
 class HandsAndGestures(BaseModel):
     left_hand: str
     right_hand: str
@@ -110,11 +122,13 @@ class HandsAndGestures(BaseModel):
     interaction: str
     naturalness: str
 
+
 class BodyPositioning(BaseModel):
     posture: str
     angle: str
     weight_distribution: str
     shoulders: str
+
 
 class SubjectAnalysis(BaseModel):
     primary_subject: str
@@ -126,6 +140,7 @@ class SubjectAnalysis(BaseModel):
     hands_and_gestures: HandsAndGestures
     body_positioning: BodyPositioning
 
+
 class BackgroundElement(BaseModel):
     item: str
     position: str
@@ -133,6 +148,7 @@ class BackgroundElement(BaseModel):
     size: str
     condition: str
     specific_features: str
+
 
 class WallSurface(BaseModel):
     material: str
@@ -144,10 +160,12 @@ class WallSurface(BaseModel):
     features: str
     wear_indicators: str
 
+
 class FloorSurface(BaseModel):
     material: str
     color: str
     pattern: str
+
 
 class Background(BaseModel):
     setting_type: str
@@ -158,11 +176,13 @@ class Background(BaseModel):
     objects_catalog: str
     background_treatment: str
 
+
 class GenerationParameters(BaseModel):
     prompts: list[str]
     keywords: list[str]
     technical_settings: str
     post_processing: str
+
 
 class ImageAnalysisResponseFormat(BaseModel):
     metadata: Metadata

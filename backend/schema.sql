@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS brand_playbooks (
 	file_path TEXT,
 	file_uploaded_at TIMESTAMPTZ,
 	file_saved_at TIMESTAMPTZ,
+	text_extracted TEXT,
 	file_analysis JSONB,
 	analysis_generated_at TIMESTAMPTZ,
 	voice TEXT,
@@ -34,7 +35,7 @@ CREATE TABLE IF NOT EXISTS brand_playbooks (
 	accent_typeface TEXT,
 	visual_style TEXT,
 	content_rules TEXT,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	UNIQUE (company_id)
 );
 

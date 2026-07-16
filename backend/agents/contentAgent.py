@@ -1,22 +1,24 @@
-# Builtin
 import json
 from typing import Any
 
-# Third-party
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain_community.utilities.dalle_image_generator import DallEAPIWrapper
 from pydantic import BaseModel, Field
 
 # Custom
-from agents.agentSetup import (CAPTION_GEN_PROMPT, IMAGE_ANALYSIS_PROMPT,
-                               POST_IMAGE_PROMPT_GEN, image_analysis_model,
-                               model)
+from agents import (
+    CAPTION_GEN_PROMPT,
+    IMAGE_ANALYSIS_PROMPT,
+    POST_IMAGE_PROMPT_GEN,
+    image_analysis_model,
+    model,
+)
 from agents.responseModels import ImageAnalysisResponseFormat
-
 
 # Setup environment files
 load_dotenv()
+
 
 # Response format
 class CaptionResponseFormat(BaseModel):
@@ -25,24 +27,26 @@ class CaptionResponseFormat(BaseModel):
     cta: str = Field(description="Call to action text")
     hook: str = Field(description="Attention-grabbing first line")
 
+
 class ImagePromptResponseFormat(BaseModel):
     post_topic: str = Field(description="Post topic of generated prompt")
     prompt: str = Field(description="Image generation prompt")
     aspect_ratio: str = Field(description="Aspect ration of the image to be generated")
 
+
 # Define models
 post_caption_gen_agent = create_agent(
-   model, 
-   tools=[],
-   system_prompt=CAPTION_GEN_PROMPT,
-   response_format=CaptionResponseFormat,
+    model,
+    tools=[],
+    system_prompt=CAPTION_GEN_PROMPT,
+    response_format=CaptionResponseFormat,
 )
 
 post_image_prompt_gen_agent = create_agent(
-   model, 
-   tools=[],
-   system_prompt=POST_IMAGE_PROMPT_GEN,
-   response_format=ImagePromptResponseFormat,
+    model,
+    tools=[],
+    system_prompt=POST_IMAGE_PROMPT_GEN,
+    response_format=ImagePromptResponseFormat,
 )
 
 
@@ -96,11 +100,12 @@ def generate_caption(
                 analysis_snippet = ""
 
         # Invoke the agent
-        response = post_caption_gen_agent.invoke({
-            "messages": [
-                {
-                    "role": "user",
-                    "content": f"""
+        response = post_caption_gen_agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": f"""
                         Use this information to create suitable social media content.
 
                         Brand guidelines:
@@ -114,10 +119,11 @@ def generate_caption(
 
                         Reference image analysis (use this to align the caption with the visual style, subjects, mood, and composition of the images):
                         {analysis_snippet}
-                    """
-                }
-            ]
-        })
+                    """,
+                    }
+                ]
+            }
+        )
 
         # Return the required data
         print(response["structured_response"].model_dump())
@@ -127,68 +133,55 @@ def generate_caption(
         return {
             "success": False,
             "message": "Error generating post caption",
-            "error": str(e)
+            "error": str(e),
         }
 
 
 # Analyze image
 def analyze_images(public_image_urls: list[str]) -> dict:
     try:
-        content: list[dict[str, Any]] = [{
-            "type": "text",
-            "text": IMAGE_ANALYSIS_PROMPT
-        }]
+        content: list[dict[str, Any]] = [
+            {"type": "text", "text": IMAGE_ANALYSIS_PROMPT}
+        ]
 
         for url in public_image_urls:
-            content.append({
-                "type": "image_url",
-                "image_url": {
-                    "url": url,
-                    "detail": "high"
-                }
-            })
+            content.append(
+                {"type": "image_url", "image_url": {"url": url, "detail": "high"}}
+            )
 
-        structured_model = image_analysis_model.with_structured_output(ImageAnalysisResponseFormat)
-        response = structured_model.invoke([
-            {
-                "role": "user",
-                "content": content
-            }
-        ])
+        structured_model = image_analysis_model.with_structured_output(
+            ImageAnalysisResponseFormat
+        )
+        response = structured_model.invoke([{"role": "user", "content": content}])
 
         # Return the required data
         print(response.model_dump())
         return response.model_dump()
     except Exception as e:
         print(f"Error analyzing images: {e}")
-        return { 
-            "success" : False,
-            "message" : "Error analyzing images",
-            "error" : str(e)
-        }
+        return {"success": False, "message": "Error analyzing images", "error": str(e)}
 
 
 # Generate image prompt
 def generate_image_prompt(
-    brand_guidelines: str,
-    caption_data: dict,
-    image_analysis: dict | list
+    brand_guidelines: str, caption_data: dict, image_analysis: dict | list
 ) -> str:
     try:
-        caption_text = caption_data.get('caption', '')
-        industry = 'general business'
-        if 'Industry' in brand_guidelines:
+        caption_text = caption_data.get("caption", "")
+        industry = "general business"
+        if "Industry" in brand_guidelines:
             try:
-                industry = brand_guidelines.split('Industry')[1].split('\n')[0].strip()
+                industry = brand_guidelines.split("Industry")[1].split("\n")[0].strip()
             except Exception:
                 pass
 
         # Invoke the agent
-        response = post_image_prompt_gen_agent.invoke({
-            "messages": [
-                {
-                    "role": "user",
-                    "content": f"""
+        response = post_image_prompt_gen_agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": f"""
                         Use the following information to create a DALL-E image prompt that matches the visual style and subjects of the reference images.
 
                         Brand guidelines:
@@ -202,10 +195,11 @@ def generate_image_prompt(
 
                         Reference image analysis (this describes the composition, color palette, lighting, technical style, mood, and subject details of each reference image; base the new image on this style so it looks like it came from the same shoot):
                         {image_analysis}
-                    """
-                }
-            ]
-        })
+                    """,
+                    }
+                ]
+            }
+        )
 
         # Return the required data
         print(response["structured_response"].prompt)

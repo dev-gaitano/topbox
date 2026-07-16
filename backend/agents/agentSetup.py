@@ -1,4 +1,3 @@
-# Third-party
 from langchain_openai import ChatOpenAI
 
 # Define Model
@@ -15,23 +14,6 @@ image_analysis_model = ChatOpenAI(
 )
 
 # BRAND AGENT PROMPTS
-BRAND_ANALYSIS_PROMPT = """
-You are a brand strategy expert.
-Analyze the provided data and create a comprehensive brand profile.
-
-Generate a structured brand profile with:
-1. Brand Voice (3-5 adjectives, e.g., "professional, friendly, innovative")
-2. Color Palette (5 hex colors that match the industry and vibe)
-3. Typography (font style recommendation, e.g., "Modern sans-serif with clean lines")
-4. Content Themes (5-10 topics they should post about)
-5. Target Audience (brief description)
-6. Posting Style (casual/professional/inspirational etc.)
-7. Industry (the industry this brand operates in)
-
-If any information is not explicitly mentioned, make a reasonable
-inference based on the overall brand tone.
-"""
-
 GUIDELINE_MERGING_PROMPT = """
 You are a brand strategy expert. You have two brand profiles for the same company:
 

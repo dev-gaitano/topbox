@@ -8,6 +8,21 @@ import { useState, useEffect } from "react";
 
 function BrandPlaybook({ selectedCompany }: CompanySelectionProps) {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
+  const uploadInnerBorder = (
+    <>
+      <div className="pb-inner-border-path"></div>
+      <div className="pb-inner-border"></div>
+      <div className="pb-upload-prompt">
+        <svg className="upload-icon" xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="currentColor">
+          <path d="M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/>
+        </svg>
+        <div className="pb-upload-prompt-text">
+          <span className="pb-upload-title">ADD PLAYBOOK</span>
+          <p className="pb-upload-desc">Upload or drag and drop a PDF file</p>
+        </div>
+      </div>
+    </>
+  )
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth)
@@ -45,9 +60,17 @@ function BrandPlaybook({ selectedCompany }: CompanySelectionProps) {
           <div className="pb-saved-content"></div>
           <div className="pb-upload-container">
             <div className="pb-upload-area">
-              <div className="pb-inner-border"></div>
+              {uploadInnerBorder}
             </div>
             <div className="btn-primary">
+              {screenWidth <= 1280 ? (
+                <p>Upload</p>
+              ) : (
+                <p>Upload guidelines</p>
+              )}
+              <svg className="arrow-outwards" xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#D9D9D9">
+                <path d="m250-223-65-65 397-397H225v-91h512v511h-92v-355L250-223Z" />
+              </svg>
               <svg style={{ display: 'none' }}>
                 <defs>
                   <filter id="displacementFilter">
@@ -126,7 +149,7 @@ function BrandPlaybook({ selectedCompany }: CompanySelectionProps) {
         </div>
         <div className="pb-upload-container">
           <div className="pb-upload-area">
-            <div className="pb-inner-border"></div>
+            {uploadInnerBorder}
           </div>
           <div className="btn-primary">
             {screenWidth <= 1280 ? (
