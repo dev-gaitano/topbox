@@ -135,6 +135,8 @@ button {
 }
 
 .btn-primary .arrow-outwards {
+  position: relative;
+  z-index: 1;
   height: 24px;
   width: 24px;
 }
