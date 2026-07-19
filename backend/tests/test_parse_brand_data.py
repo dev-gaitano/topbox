@@ -34,6 +34,8 @@ VALID_JSON_DICT = {
     "unique_value": "Indestructible anvils",
     "content_pillars": [["Pillar 1", "Pillar 2"], ["Pillar 3"]],
     "social_tone": "Humorous",
+    "inferred_fields": ["logo", "website"],
+    "field_confidence": {"brand_name": 0.99, "logo": 0.75},
 }
 
 
@@ -168,6 +170,8 @@ def test_types_are_correct_on_list_and_dict_fields(mock_llm_success):
             lambda x: isinstance(x, (list, tuple))
             and all(isinstance(i, (list, tuple)) for i in x),
         ),
+        ("inferred_fields", list),
+        ("field_confidence", dict),
     ]
 
     for field_name, check_fn in fields_to_check:

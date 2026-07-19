@@ -34,6 +34,8 @@ The JSON object must have exactly the following 20 keys with the specified types
 - unique_value: string
 - content_pillars: list of lists of strings (representing pillars/categories)
 - social_tone: string
+- inferred_fields: list of strings - field names you inferred because they were not explicitly stated in the document
+- field_confidence: dictionary of field name to confidence score (0.0 to 1.0) for every field you extracted or inferred
 
 Text to analyze:
 {text}
@@ -89,6 +91,8 @@ Text to analyze:
                 "unique_value": str,
                 "content_pillars": list,
                 "social_tone": str,
+                "inferred_fields": list,
+                "field_confidence": dict,
             }
 
             for key in required_fields.keys():
@@ -102,6 +106,10 @@ Text to analyze:
             data["content_pillars"] = tuple(
                 tuple(pillar) for pillar in data["content_pillars"]
             )
+
+            data["field_confidence"] = {
+                key: float(value) for key, value in data["field_confidence"].items()
+            }
 
             return data
         except (json.JSONDecodeError, ValueError, TypeError, KeyError) as e:
