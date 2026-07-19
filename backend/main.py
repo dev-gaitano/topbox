@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
 
-from databaseConnection import db_connection
+from database.connection import db_connection
 from agents.brandAgent import (
     analyze_brand,
     analyze_guidelines,
