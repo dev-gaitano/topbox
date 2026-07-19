@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: "https://topbox-prod-6foe.onrender.com",
+        target: "https://topbox.onrender.com",
         changeOrigin: true,
       },
     },
