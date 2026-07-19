@@ -34,7 +34,7 @@ class Company:
 
         for value, expected_type in fields.values():
             if not isinstance(value, expected_type):
-                raise TypeError("Invalid data type")
+                raise TypeError(f"Invalid data type for {value}")
 
         if not all([name, logo, industry, email, description, target_audience, tone]):
             raise ValueError("Missing required fields")
