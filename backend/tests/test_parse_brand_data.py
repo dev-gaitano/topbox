@@ -136,7 +136,7 @@ def test_malformed_json_triggers_exactly_two_retries(mock_llm_fails_then_succeed
     result = parse_brand_data("dummy text")
     assert result is not None
     assert isinstance(result, dict)
-    assert mock_llm_fails_then_succeeds.invoke.call_count == 2
+    assert mock_llm_fails_then_succeeds.invoke.call_count == 3
 
 
 # 3. Three consecutive bad responses returns None
