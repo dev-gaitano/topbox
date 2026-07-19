@@ -12,7 +12,7 @@ from werkzeug.datastructures import FileStorage
 
 # Custom
 from agents.prompts.brand_analysis import BRAND_ANALYSIS_PROMPT
-from agents.agentSetup import GUIDELINE_MERGING_PROMPT, model
+from agents.setup import GUIDELINE_MERGING_PROMPT, model
 
 # Setup environment files
 load_dotenv()
