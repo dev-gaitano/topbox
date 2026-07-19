@@ -131,15 +131,15 @@ def test_valid_text_in_correct_dict_out(extracted_text, mock_llm_success):
     assert isinstance(result["color_direction"], dict)
 
 
-# 2. Malformed JSON triggers exactly one retry
-def test_malformed_json_triggers_exactly_one_retry(mock_llm_fails_then_succeeds):
+# 2. Malformed JSON triggers exactly two retries
+def test_malformed_json_triggers_exactly_two_retries(mock_llm_fails_then_succeeds):
     result = parse_brand_data("dummy text")
     assert result is not None
     assert isinstance(result, dict)
     assert mock_llm_fails_then_succeeds.invoke.call_count == 2
 
 
-# 3. Two consecutive bad responses returns None
+# 3. Three consecutive bad responses returns None
 def test_three_consecutive_bad_responses_returns_none(mock_llm_malformed):
     result = parse_brand_data("dummy text")
     assert result is None
