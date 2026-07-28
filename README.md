@@ -57,6 +57,7 @@ npm run build
 The frontend expects the following Flask backend endpoints:
 
 ### Companies
+
 - `GET /api/companies` - Fetch all companies
 - `POST /api/companies` - Create a new company
 - `DELETE /api/companies/<int:company_id>` - Delete selected company
@@ -64,12 +65,14 @@ The frontend expects the following Flask backend endpoints:
 - `PATCH /api/companies/<int:company_id>` - Update selected company
 
 ### Brand Guidelines
+
 - `POST /api/brand-guidelines/upload` - Upload brand guidelines file
 - `POST /api/brand-guidelines/generate` - Generate brand guidelines
 - `POST /api/brand-guidelines/save` - Save generated guidelines
 - `GET /api/brand-guidelines/<int:company_id>` - Get brand guidelines for selected company
 
 ### Content
+
 - `POST /api/content/create` - Create new content post
 - `GET /api/content/latest` - Get latest content for a company
 - `GET /api/content/list` - Get latest 20 content for a company
@@ -79,34 +82,46 @@ The frontend expects the following Flask backend endpoints:
 
 ```
 .
-├── .git/                               # Git metadata
 ├── README.md                           # Project documentation
 ├── backend/                            # Flask Backend
-│   ├── main.py                         # API entry point
-│   ├── databaseConnection.py           # Database connection and setup
-│   ├── requirements.txt                # Python deps
-│   ├── schema.sql                      # DB schema
+│   ├── app.py                          # Application entry point
 │   ├── Dockerfile                      # Backend container config
-│   ├── .env                            # Secrets (local)
-│   └── agents/                         # AI Agent logic
-│       ├── agentSetup.py               # Shared AI config
-│       ├── brandAgent.py               # Brand analysis agent
-│       ├── contentAgent.py             # Content creation agent
-│       └── responseModels.py           # Pydantic models
-├── frontend/                           # React Frontend
+│   ├── requirements.txt                # Python dependencies
+│   ├── .env                            # Environment variables (local)
+│   ├── app/                            # Application package
+│   │   ├── __init__.py                 # Application factory (create_app)
+│   │   ├── config.py                   # App configuration
+│   │   ├── errors.py                   # Error handlers
+│   │   ├── extensions.py               # Flask extensions
+│   │   ├── agents/                     # AI Agent logic (OpenAI)
+│   │   │   ├── brandAgent.py           # Brand guidelines agent
+│   │   │   ├── contentAgent.py         # Content generation agent
+│   │   │   ├── responseModels.py       # Pydantic response models
+│   │   │   └── setup.py                # Shared AI agent setup
+│   │   ├── api/                        # API Blueprints & Modular Routes
+│   │   │   ├── companies/              # Companies (routes, service, repository)
+│   │   │   ├── content/                # Content (routes, service, repository)
+│   │   │   └── guidelines/             # Brand guidelines (routes, service, repository)
+│   │   ├── database/                   # Database connection setup
+│   │   ├── models/                     # Domain data models
+│   │   └── utils/                      # Helper utilities
+│   └── sql/                            # Database SQL schemas
+├── frontend/                           # React + TypeScript Frontend
 │   ├── index.html                      # HTML entry point
-│   ├── package.json                    # Frontend config and scripts
-│   ├── package-lock.json               # Locked dependency versions
-│   ├── tsconfig.json                   # TypeScript config
-│   ├── tsconfig.node.json              # TypeScript config for tooling
-│   ├── vite.config.ts                  # Vite config
-│   └── src/                            # Frontend source
-│       ├── components/                 # React components
-│       ├── types/                      # Type definitions
-│       ├── App.tsx                     # Main component
-│       └── main.tsx                    # Entry point
+│   ├── package.json                    # Frontend dependencies and scripts
+│   ├── tsconfig.json                   # TypeScript configuration
+│   ├── vite.config.ts                  # Vite configuration
+│   └── src/                            # Frontend source code
+│       ├── App.tsx                     # Main React application component
+│       ├── main.tsx                    # React entry point
+│       ├── index.css                   # Global styles
+│       ├── components/                 # UI components
+│       └── props/                      # Type definitions & props interfaces
 ```
 
 ## Notes
 
 - Selected company state is managed at "Main.tsx"
+- repository.py files - Handle everything that talks to the SQL database
+- service.py files - Handle all the business logic
+- routes.py - files - Handle only HTTP related code

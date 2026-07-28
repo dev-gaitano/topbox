@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from utils import extract_text
+from app.utils import extract_text
 
 FIXTURE_PDF = Path(__file__).parent / "fixtures" / "sample_brand.pdf"
 KNOWN_TEXT = "Industry"
