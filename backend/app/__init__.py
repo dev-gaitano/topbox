@@ -1,5 +1,8 @@
 from flask import Flask
 
+from app.api import register_blueprints
+from app.errors import register_error_handlers
+
 from .config import Config
 from .extensions import init_extensions
 
@@ -10,5 +13,9 @@ def create_app():
     app.config.from_object(Config)
 
     init_extensions(app)
+
+    register_blueprints(app)
+
+    register_error_handlers(app)
 
     return app
