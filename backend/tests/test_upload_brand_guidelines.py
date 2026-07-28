@@ -2,15 +2,16 @@ import io
 
 import pytest
 
-from main import app
+from app import create_app
 
 API_URL = "/api/brand-guidelines/upload"
 
 
 @pytest.fixture
 def client():
-    app.config["TESTING"] = True  # setup
-    with app.test_client() as client:
+    flask_app = create_app()
+    flask_app.config["TESTING"] = True  # setup
+    with flask_app.test_client() as client:
         yield client
 
 

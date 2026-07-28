@@ -7,14 +7,14 @@ from langchain_community.utilities.dalle_image_generator import DallEAPIWrapper
 from pydantic import BaseModel, Field
 
 # Custom
-from agents import (
+from app.agents import (
     CAPTION_GEN_PROMPT,
     IMAGE_ANALYSIS_PROMPT,
     POST_IMAGE_PROMPT_GEN,
     image_analysis_model,
     model,
 )
-from agents.responseModels import ImageAnalysisResponseFormat
+from app.agents.responseModels import ImageAnalysisResponseFormat
 
 # Setup environment files
 load_dotenv()
