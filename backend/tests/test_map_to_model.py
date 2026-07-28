@@ -1,6 +1,6 @@
 import pytest
 
-from models.brand_guidelines import BrandGuidelines
+from app.models.brand_guidelines import BrandGuidelines
 
 VALID_PARSED = {
     "brand_name": "Acme",

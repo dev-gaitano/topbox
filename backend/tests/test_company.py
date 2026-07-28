@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from models.company import Company
+from app.models.company import Company
 
 
 def test_company_checks_datatype():

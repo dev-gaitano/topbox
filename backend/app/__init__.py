@@ -1,9 +1,9 @@
 from flask import Flask
 
 from app.api import register_blueprints
-from app.errors import register_error_handlers
 
 from .config import Config
+from .errors import register_error_handlers
 from .extensions import init_extensions
 
 

@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from utils import extract_text, parse_brand_data
+from app.utils import extract_text, parse_brand_data
 
 FIXTURE_PDF = Path(__file__).parent / "fixtures" / "sample_brand.pdf"
 
@@ -46,7 +46,7 @@ def extracted_text():
 
 @pytest.fixture
 def mock_llm():
-    with patch("utils.parse_brand_data.llm") as mock_model:
+    with patch("app.utils.parse_brand_data.llm") as mock_model:
         yield mock_model
 
 

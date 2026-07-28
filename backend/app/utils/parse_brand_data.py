@@ -1,7 +1,7 @@
 import json
 import logging
 from typing import Any, Optional
-from agents import model as llm
+from app.agents import model as llm
 
 logger = logging.getLogger(__name__)
 
