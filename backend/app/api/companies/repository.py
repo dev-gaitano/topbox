@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 from app.database.connection import db_connection
@@ -48,8 +49,10 @@ def get_by_id(company_id: int) -> dict[str, Any] | None:
         row = cursor.fetchone()
         if not row:
             return None
+
         columns = [col[0] for col in cursor.description]
         return dict(zip(columns, row))
+
     finally:
         if cursor:
             cursor.close()
@@ -130,7 +133,7 @@ def delete(company_id: int):
         return {
             "id": row[0],
             "name": row[1],
-            "createdAt": row[2].isoformat() if row[2] else None,
+            "created_at": row[2].isoformat() if row[2] else None,
         }
 
     finally:
@@ -140,24 +143,34 @@ def delete(company_id: int):
             conn.close()
 
 
-def update(company: Company, company_id: int):
+def update(changed_fields: dict, company_id: int):
     conn = db_connection()
     cursor = conn.cursor()
 
-    try:
+    set_clauses = []
+    values = []
 
+    for col, val in changed_fields.items():
+        # Handle list/jsonb columns
+        if col in ("color_palette", "main_competitors", "personality"):
+            set_clauses.append(f"{col} = %s::jsonb")
+            values.append(json.dumps(val))
+        else:
+            set_clauses.append(f"{col} = %s")
+            values.append(val)
+
+    set_clauses.append("updated_at = CURRENT_TIMESTAMP")
+    values.append(company_id)
+    query = f"""
+        UPDATE companies
+        SET {', '.join(set_clauses)}
+        WHERE id = %s
+        RETURNING id, name, updated_at;
+    """
+
+    try:
         # Update company in database
-        cursor.execute(
-            """
-            UPDATE companies
-            SET name = %s, logo = %s, industry = %s, email = %s, description = %s,
-                       target_audience = %s, color_palette = %s::jsonb, unique_value = %s,
-                       main_competitors = %s::jsonb, personality = %s::jsonb, tone = %s
-            WHERE id = %s
-            RETURNING id, name, created_at
-        """,
-            company.to_db_params() + (company_id,),
-        )
+        cursor.execute(query, tuple(values))
 
         row = cursor.fetchone()
         conn.commit()
@@ -165,7 +178,7 @@ def update(company: Company, company_id: int):
         return {
             "id": row[0],
             "name": row[1],
-            "createdAt": row[2].isoformat() if row[2] else None,
+            "updated_at": row[2].isoformat() if row[2] else None,
         }
 
     except:
