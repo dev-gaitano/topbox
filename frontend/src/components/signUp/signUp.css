@@ -41,7 +41,7 @@
 .auth-subtext {
   font-size: 14px;
   color: var(--text-muted);
-  margin: 0 0 28px;
+  margin: 0 0 32px;
   line-height: 1.5;
 }
 
@@ -96,8 +96,8 @@
 }
 
 .auth-footer {
-  margin: 22px 0 0;
-  font-size: 13px;
+  margin: 32px 0 0;
+  font-size: 14px;
   color: var(--text-more-muted);
 }
 
@@ -136,6 +136,41 @@
 
 @media (max-width: 420px) {
   .auth-card {
-    padding: 52px 22px 28px;
+    padding: 51px 24px 24px;
+  }
+
+  .logo-container {
+    top: -27px;
+  }
+
+  .auth-subtext {
+    font-size: 12px;
+    margin: 0 0 24px;
+  }
+
+  .logo-container img {
+    height: 54px;
+  }
+
+  .auth-form {
+    gap: 24px;
+  }
+
+  label {
+    display: none;
+  }
+
+  .auth-form > div:nth-child(1) > div {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .input-primary {
+    width: 303px;
+  }
+
+  .auth-footer {
+    font-size: 12px;
+    margin: 24px 0 0;
   }
 }
