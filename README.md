@@ -99,6 +99,7 @@ The frontend expects the following Flask backend endpoints:
 │   │   │   ├── responseModels.py       # Pydantic response models
 │   │   │   └── setup.py                # Shared AI agent setup
 │   │   ├── api/                        # API Blueprints & Modular Routes
+│   │   │   ├── auth/                   # Auth (routes, service, repository)
 │   │   │   ├── companies/              # Companies (routes, service, repository)
 │   │   │   ├── content/                # Content (routes, service, repository)
 │   │   │   └── guidelines/             # Brand guidelines (routes, service, repository)
