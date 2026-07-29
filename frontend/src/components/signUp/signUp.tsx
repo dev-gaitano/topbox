@@ -142,7 +142,7 @@ export default function SignUp() {
                   name="username"
                   type="text"
                   autoComplete="name"
-                  placeholder="Jordan Rivers"
+                  placeholder="Zawadi"
                   value={form.username}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -170,7 +170,7 @@ export default function SignUp() {
                   name="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="jordan@company.com"
+                  placeholder="zawadi@company.com"
                   value={form.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
