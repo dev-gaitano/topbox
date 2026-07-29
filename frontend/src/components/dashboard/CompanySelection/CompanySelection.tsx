@@ -4,8 +4,8 @@ import "./CompanySelection.css";
 import NewCompanyForm from "../NewCompanyForm/NewCompanyForm";
 
 // Props
-import { Company } from "../../props";
-import { CompanySelectionProps } from "../../props";
+import { Company } from "../../../props";
+import { CompanySelectionProps } from "../../../props";
 import { useEffect, useState } from "react";
 import CompanyUpdateForm from "../CompanyUpdateForm/CompanyUpdateForm";
 
