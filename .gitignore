@@ -19,6 +19,7 @@ out/
 # production
 build/
 testFile.py
+*.bak
 
 # debug
 npm-debug.log*
