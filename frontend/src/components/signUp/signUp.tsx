@@ -1,8 +1,10 @@
-import { useState, useMemo, FormEvent, ChangeEvent } from "react";
-import "./signUp.css";
+import { useState, useEffect, useMemo, FormEvent, ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { SignUpFormState } from "../../props";
 import { SignUpFormErrors } from "../../props";
 import SuccessToast from "../ui/SuccessToast/SuccessToast";
+import "./signUp.css";
 
 const INITIAL_STATE: SignUpFormState = {
   username: "",
@@ -50,6 +52,7 @@ export default function SignUp() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const navigate = useNavigate();
   const errors = useMemo(() => validate(form), [form]);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -84,6 +87,14 @@ export default function SignUp() {
     setIsSubmitting(false);
     setIsSuccess(true);
   }
+
+  useEffect(() => {
+    if (!isSuccess) return;
+    const timer = setTimeout(() => {
+      navigate("/dashboard");
+    }, 1600);
+    return () => clearTimeout(timer);
+  }, [isSuccess, navigate]);
 
   return (
     <div className="auth-screen">
