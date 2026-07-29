@@ -12,6 +12,11 @@ export interface SignUpFormErrors {
   confirmPassword?: string;
 }
 
+export interface ToastProps {
+  title: string;
+  subtext: string;
+}
+
 export interface Company {
   id: number;
   name: string;
