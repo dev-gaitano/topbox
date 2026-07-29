@@ -1,4 +1,4 @@
-import { Company } from "../../props";
+import { Company } from "../../../props";
 import "./CompanyUpdateForm.css";
 
 import { useState, useEffect } from "react";
