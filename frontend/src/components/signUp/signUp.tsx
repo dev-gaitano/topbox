@@ -218,8 +218,8 @@ export default function SignUp() {
 
           <button
             type="submit"
-            className="signup-submit-btn btn-primary"
-            disabled={isSubmitting}
+            className={`signup-submit-btn btn-primary ${isSubmitting || isSuccess ? "disabled" : ""}`}
+            disabled={isSubmitting || isSuccess}
           >
             {isSubmitting ? <Spinner /> : "Create account"}
           </button>

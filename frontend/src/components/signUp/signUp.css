@@ -90,6 +90,11 @@
   margin: 2px 4px 0;
 }
 
+.btn-primary.disabled {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
 .auth-footer {
   margin: 22px 0 0;
   font-size: 13px;
