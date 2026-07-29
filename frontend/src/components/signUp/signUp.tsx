@@ -51,6 +51,7 @@ export default function SignUp() {
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const errors = useMemo(() => validate(form), [form]);
@@ -61,6 +62,7 @@ export default function SignUp() {
       ...prev,
       [name]: value,
     }));
+    if (apiError) setApiError(null);
   }
 
   function handleBlur(event: ChangeEvent<HTMLInputElement>) {
@@ -76,16 +78,40 @@ export default function SignUp() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitAttempted(true);
+    setApiError(null);
 
     if (Object.keys(errors).length > 0) {
       return;
     }
 
     setIsSubmitting(true);
-    // Replace with a request to signup endpoint.
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: form.username,
+          email: form.email,
+          password: form.password,
+          confirmed_password: form.confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setApiError(data.message || "Failed to create account.");
+        return;
+      }
+
+      setIsSuccess(true);
+    } catch (err) {
+      setApiError("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   useEffect(() => {
@@ -226,6 +252,8 @@ export default function SignUp() {
               </div>
             </div>
           </div>
+
+          {apiError && <SuccessToast subtext={apiError} success="red" />}
 
           <button
             type="submit"

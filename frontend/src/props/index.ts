@@ -13,8 +13,8 @@ export interface SignUpFormErrors {
 }
 
 export interface ToastProps {
-  title: string;
-  subtext: string;
+  title?: string;
+  subtext?: string;
   success: string;
 }
 
