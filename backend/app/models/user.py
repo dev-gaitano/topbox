@@ -31,17 +31,15 @@ class User:
         self.created_at = created_at
 
     @classmethod
-    def handle_request_data(cls, request_data: dict[str, Any], password_hash: str) -> "User":
-        data = {k.strip(): v for k, v in request_data.items()}
-
-        def clean(key: str) -> str:
-            return str(data.get(key) or "").strip()
-
-        return cls(
-            username=clean("username"),
-            email=clean("email"),
-            password_hash=password_hash,
+    def handle_signup_data(cls, data: dict[str, Any]) -> tuple[str, str, str, str]:
+        data = data or {}
+        username = data.get("username", "")
+        email = data.get("email", "")
+        password = data.get("password", "")
+        confirmed_password = (
+            data.get("confirmed_password") or data.get("confirm_password") or ""
         )
+        return username, email, password, confirmed_password
 
     def to_db_params(self) -> tuple[str, str, str]:
         return (
