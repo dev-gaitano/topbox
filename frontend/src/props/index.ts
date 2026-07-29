@@ -15,6 +15,7 @@ export interface SignUpFormErrors {
 export interface ToastProps {
   title: string;
   subtext: string;
+  success: string;
 }
 
 export interface Company {

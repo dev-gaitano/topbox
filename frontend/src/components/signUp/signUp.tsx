@@ -2,6 +2,7 @@ import { useState, useMemo, FormEvent, ChangeEvent } from "react";
 import "./signUp.css";
 import { SignUpFormState } from "../../props";
 import { SignUpFormErrors } from "../../props";
+import SuccessToast from "../ui/SuccessToast/SuccessToast";
 
 const INITIAL_STATE: SignUpFormState = {
   username: "",
@@ -229,16 +230,11 @@ export default function SignUp() {
         </p>
       </div>
       {isSuccess && (
-        <div className="success-toast" role="status">
-          <div>
-            <p className="success-toast-title">
-              You're in, {form.username.split(" ")[0]}
-            </p>
-            <p className="success-toast-subtext">
-              Taking you to your dashboard...
-            </p>
-          </div>
-        </div>
+        <SuccessToast
+          title={`You're in, ${form.username.split(" ")[0]}`}
+          subtext="Taking you to your dashboard..."
+          success="green"
+        />
       )}
     </div>
   );
