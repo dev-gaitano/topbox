@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "http://13.53.132.13:5000/api/:path*"
+      "destination": "https://topbox-prod-6foe.onrender.com/api/:path*"
     }
   ]
 }
