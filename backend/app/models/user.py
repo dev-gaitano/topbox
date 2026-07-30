@@ -41,6 +41,13 @@ class User:
         )
         return username, email, password, confirmed_password
 
+    @classmethod
+    def handle_login_data(cls, data: dict[str, Any]) -> tuple[str, str]:
+        data = data or {}
+        email = data.get("email", "")
+        password = data.get("password", "")
+        return email, password
+
     def to_db_params(self) -> tuple[str, str, str]:
         return (
             self.username,
