@@ -1,4 +1,4 @@
-.auth-screen {
+.signup-auth-screen {
   flex: 1;
   width: 100%;
   display: flex;
@@ -6,7 +6,7 @@
   justify-content: center;
 }
 
-.auth-card {
+.signup-auth-card {
   position: relative;
   width: 100%;
   max-width: 720px;
@@ -17,7 +17,7 @@
   text-align: center;
 }
 
-.logo-container {
+.signup-logo-container {
   position: absolute;
   top: -32px;
   left: 50%;
@@ -27,44 +27,44 @@
   justify-content: center;
 }
 
-.logo-container img {
+.signup-logo-container img {
   height: 64px;
 }
 
-.auth-heading {
+.signup-auth-heading {
   font-weight: 600;
   font-size: 26px;
   line-height: 1.25;
   margin: 8px 0 6px;
 }
 
-.auth-subtext {
+.signup-auth-subtext {
   font-size: 14px;
   color: var(--text-muted);
   margin: 0 0 32px;
   line-height: 1.5;
 }
 
-.auth-form {
+.signup-auth-form {
   display: flex;
   flex-direction: column;
   gap: 32px;
   text-align: left;
 }
 
-.auth-form > div:nth-child(1) {
+.signup-auth-form>div:nth-child(1) {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.auth-form > div:nth-child(1) > div {
+.signup-auth-form>div:nth-child(1)>div {
   display: flex;
   justify-content: space-between;
   gap: 16px;
 }
 
-.field {
+.signup-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -74,93 +74,93 @@
   width: 320px;
 }
 
-.input--error {
+.signup-input--error {
   border-color: var(--error);
 }
 
-.input-with-action {
+.signup-input-with-action {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.field-error {
+.signup-field-error {
   font-size: 12.5px;
   color: var(--error);
   margin: 2px 4px 0;
 }
 
-.btn-primary.disabled {
+.signup-btn-primary.disabled {
   color: var(--text-disabled);
   cursor: not-allowed;
 }
 
-.auth-footer {
+.signup-auth-footer {
   margin: 32px 0 0;
   font-size: 14px;
   color: var(--text-more-muted);
 }
 
-.auth-footer a {
+.signup-auth-footer a {
   color: var(--secondary);
   font-weight: 500;
   text-decoration: none;
   transition: 0.2s all ease-in-out;
 }
 
-.auth-footer a:hover {
+.signup-auth-footer a:hover {
   color: var(--primary);
   text-decoration: underline;
 }
 
-.spinner {
+.signup-spinner {
   width: 16px;
   height: 16px;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-top-color: #fff;
-  animation: spin 0.7s linear infinite;
+  animation: signup-spin 0.7s linear infinite;
 }
 
-@keyframes spin {
+@keyframes signup-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spinner {
+  .signup-spinner {
     animation-duration: 1.4s;
   }
 }
 
 @media (max-width: 420px) {
-  .auth-card {
+  .signup-auth-card {
     padding: 51px 24px 24px;
   }
 
-  .logo-container {
+  .signup-logo-container {
     top: -27px;
   }
 
-  .auth-subtext {
+  .signup-auth-subtext {
     font-size: 12px;
     margin: 0 0 24px;
   }
 
-  .logo-container img {
+  .signup-logo-container img {
     height: 54px;
   }
 
-  .auth-form {
+  .signup-auth-form {
     gap: 24px;
   }
 
-  label {
+  .signup-auth-form label {
     display: none;
   }
 
-  .auth-form > div:nth-child(1) > div {
+  .signup-auth-form>div:nth-child(1)>div {
     flex-direction: column;
     align-items: center;
   }
@@ -169,7 +169,7 @@
     width: 303px;
   }
 
-  .auth-footer {
+  .signup-auth-footer {
     font-size: 12px;
     margin: 24px 0 0;
   }

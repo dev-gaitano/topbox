@@ -5,11 +5,16 @@ export interface SignUpFormState {
   confirmPassword: string;
 }
 
-export interface SignUpFormErrors {
+export interface FormErrors {
   username?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
+}
+
+export interface LogInFormState {
+  email: string;
+  password: string;
 }
 
 export interface ToastProps {

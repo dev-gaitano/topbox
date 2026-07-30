@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, FormEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { SignUpFormState } from "../../props";
-import { SignUpFormErrors } from "../../props";
+import { SignUpFormState, FormErrors } from "../../props";
 import SuccessToast from "../ui/SuccessToast/SuccessToast";
-import "./signUp.css";
+import "./SignUp.css";
 
 const INITIAL_STATE: SignUpFormState = {
   username: "",
@@ -15,8 +14,8 @@ const INITIAL_STATE: SignUpFormState = {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function validate(form: SignUpFormState): SignUpFormErrors {
-  const errors: SignUpFormErrors = {};
+function validate(form: SignUpFormState): FormErrors {
+  const errors: FormErrors = {};
 
   if (!form.username.trim()) {
     errors.username = "Enter your username.";
@@ -70,7 +69,7 @@ export default function SignUp() {
     setTouched((prev) => ({ ...prev, [name]: true }));
   }
 
-  function showError(field: keyof SignUpFormErrors): string | undefined {
+  function showError(field: keyof SignUpFormState): string | undefined {
     if (!touched[field] && !submitAttempted) return undefined;
     return errors[field];
   }
@@ -123,19 +122,21 @@ export default function SignUp() {
   }, [isSuccess, navigate]);
 
   return (
-    <div className="auth-screen">
-      <div className="auth-card">
-        <div className="logo-container">
+    <div className="signup-auth-screen">
+      <div className="signup-auth-card">
+        <div className="signup-logo-container">
           <img src="https://res.cloudinary.com/diwkfbsgv/image/upload/v1775206748/logo_u4sz9t.svg" />
         </div>
 
-        <h1 className="auth-heading">Create your account</h1>
-        <p className="auth-subtext">Set up your workspace in under a minute.</p>
+        <h1 className="signup-auth-heading">Create your account</h1>
+        <p className="signup-auth-subtext">
+          Set up your workspace in under a minute.
+        </p>
 
-        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+        <form className="signup-auth-form" onSubmit={handleSubmit} noValidate>
           <div>
             <div>
-              <div className="field">
+              <div className="signup-field">
                 <label htmlFor="username">Username</label>
                 <input
                   id="username"
@@ -152,18 +153,18 @@ export default function SignUp() {
                   }
                   className={
                     showError("username")
-                      ? "input-primary input--error"
+                      ? "input-primary signup-input--error"
                       : "input-primary"
                   }
                 />
                 {showError("username") && (
-                  <p className="field-error" id="username-error">
+                  <p className="signup-field-error" id="username-error">
                     {errors.username}
                   </p>
                 )}
               </div>
 
-              <div className="field">
+              <div className="signup-field">
                 <label htmlFor="email">Email</label>
                 <input
                   id="email"
@@ -180,12 +181,12 @@ export default function SignUp() {
                   }
                   className={
                     showError("email")
-                      ? "input-primary input--error"
+                      ? "input-primary signup-input--error"
                       : "input-primary"
                   }
                 />
                 {showError("email") && (
-                  <p className="field-error" id="email-error">
+                  <p className="signup-field-error" id="email-error">
                     {errors.email}
                   </p>
                 )}
@@ -193,9 +194,9 @@ export default function SignUp() {
             </div>
 
             <div>
-              <div className="field">
+              <div className="signup-field">
                 <label htmlFor="password">Password</label>
-                <div className="input-with-action">
+                <div className="signup-input-with-action">
                   <input
                     id="password"
                     name="password"
@@ -210,19 +211,19 @@ export default function SignUp() {
                     }
                     className={
                       showError("password")
-                        ? "input-primary input--error"
+                        ? "input-primary signup-input--error"
                         : "input-primary"
                     }
                   />
                 </div>
                 {showError("password") && (
-                  <p className="field-error" id="password-error">
+                  <p className="signup-field-error" id="password-error">
                     {errors.password}
                   </p>
                 )}
               </div>
 
-              <div className="field">
+              <div className="signup-field">
                 <label htmlFor="confirmPassword">Confirm password</label>
                 <input
                   id="confirmPassword"
@@ -240,12 +241,12 @@ export default function SignUp() {
                   }
                   className={
                     showError("confirmPassword")
-                      ? "input-primary input--error"
+                      ? "input-primary signup-input--error"
                       : "input-primary"
                   }
                 />
                 {showError("confirmPassword") && (
-                  <p className="field-error" id="confirmPassword-error">
+                  <p className="signup-field-error" id="confirmPassword-error">
                     {errors.confirmPassword}
                   </p>
                 )}
@@ -264,8 +265,8 @@ export default function SignUp() {
           </button>
         </form>
 
-        <p className="auth-footer">
-          Already have an account? <a href="#login">Log in</a>
+        <p className="signup-auth-footer">
+          Already have an account? <a href="/login">Log in</a>
         </p>
       </div>
       {isSuccess && (
@@ -280,5 +281,5 @@ export default function SignUp() {
 }
 
 function Spinner() {
-  return <span className="spinner" aria-hidden="true" />;
+  return <span className="signup-spinner" aria-hidden="true" />;
 }
