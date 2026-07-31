@@ -125,3 +125,58 @@ def handle_login(
             "created_at": user["created_at"],
         },
     }
+
+
+def _hash_refresh_token(refresh_token: str) -> str:
+    return hashlib.sha256(refresh_token.encode("utf-8")).hexdigest()
+
+
+def _session_is_expired(session: dict) -> bool:
+    expires_at = session.get("expires_at")
+    if expires_at is None:
+        return True
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at)
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    return expires_at <= datetime.now(timezone.utc)
+
+
+def handle_logout(refresh_token: str) -> None:
+    if not refresh_token or not str(refresh_token).strip():
+        raise ValidationError("Refresh token is required")
+
+    token_hash = _hash_refresh_token(refresh_token.strip())
+    session = repository.find_session_by_refresh_token(token_hash)
+    if not session:
+        raise AuthenticationError("Invalid refresh token")
+    if session.get("revoked_at"):
+        return
+
+    repository.revoke_session(session["id"])
+
+
+def handle_refresh(
+    refresh_token: str,
+    user_agent: str | None = None,
+    ip_address: str | None = None,
+) -> dict:
+    if not refresh_token or not str(refresh_token).strip():
+        raise ValidationError("Refresh token is required")
+
+    token_hash = _hash_refresh_token(refresh_token.strip())
+    session = repository.find_session_by_refresh_token(token_hash)
+    if not session or session.get("revoked_at") or _session_is_expired(session):
+        raise AuthenticationError("Invalid refresh token")
+
+    user = repository.find_user_by_id(session["user_id"])
+    if not user:
+        raise AuthenticationError("Invalid refresh token")
+
+    repository.revoke_session(session["id"])
+    return issue_tokens(
+        user_id=user["id"],
+        email=user["email"],
+        user_agent=user_agent,
+        ip_address=ip_address,
+    )
