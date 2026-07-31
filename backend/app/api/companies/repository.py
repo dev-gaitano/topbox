@@ -4,26 +4,30 @@ from typing import Any
 from app.database.connection import db_connection
 from app.models import Company
 
+COMPANY_COLUMNS = """
+    id, user_id, name, logo, industry, email, description,
+    target_audience, color_palette, unique_value,
+    main_competitors, personality, tone, created_at
+"""
 
-def get_all() -> list[dict]:
+
+def get_all(user_id: str) -> list[dict]:
     conn = db_connection()
     cursor = conn.cursor()
 
     try:
-        # Get all companies from database
-        cursor.execute("""
-                       SELECT id, name, logo, industry, email, description,
-                       target_audience, color_palette, unique_value,
-                       main_competitors, personality, tone, created_at
-                       FROM companies ORDER BY created_at;
-                       """)
+        cursor.execute(
+            f"""
+            SELECT {COMPANY_COLUMNS}
+            FROM companies
+            WHERE user_id = %s
+            ORDER BY created_at;
+            """,
+            (user_id,),
+        )
         rows = cursor.fetchall() or []
         columns = [col[0] for col in cursor.description]
-
-        # Store companies in a list of dicts
-        companies: list[dict[str, Any]] = [dict(zip(columns, r)) for r in rows]
-
-        return companies
+        return [dict(zip(columns, r)) for r in rows]
 
     finally:
         if cursor:
@@ -32,19 +36,18 @@ def get_all() -> list[dict]:
             conn.close()
 
 
-def get_by_id(company_id: int) -> dict[str, Any] | None:
+def get_by_id(company_id: int, user_id: str) -> dict[str, Any] | None:
     conn = db_connection()
     cursor = conn.cursor()
 
     try:
         cursor.execute(
-            """
-            SELECT id, name, logo, industry, email, description,
-                   target_audience, color_palette, unique_value,
-                   main_competitors, personality, tone, created_at
-            FROM companies WHERE id = %s;
+            f"""
+            SELECT {COMPANY_COLUMNS}
+            FROM companies
+            WHERE id = %s AND user_id = %s;
             """,
-            (company_id,),
+            (company_id, user_id),
         )
         row = cursor.fetchone()
         if not row:
@@ -60,7 +63,7 @@ def get_by_id(company_id: int) -> dict[str, Any] | None:
             conn.close()
 
 
-def create(company: Company) -> dict[str, Any]:
+def create(company: Company, user_id: str) -> dict[str, Any]:
     conn = db_connection()
     cursor = conn.cursor()
 
@@ -68,6 +71,7 @@ def create(company: Company) -> dict[str, Any]:
         cursor.execute(
             """
             INSERT INTO companies (
+                user_id,
                 name,
                 logo,
                 industry,
@@ -81,19 +85,16 @@ def create(company: Company) -> dict[str, Any]:
                 tone
             )
             VALUES (
-                %s, %s, %s, %s, %s,
-                %s, %s, %s,
-                %s::jsonb,
-                %s::jsonb,
-                %s
+                %s, %s, %s, %s, %s, %s,
+                %s, %s::jsonb, %s,
+                %s::jsonb, %s::jsonb, %s
             )
             RETURNING id, name, created_at;
             """,
-            company.to_db_params(),
+            (user_id, *company.to_db_params()),
         )
 
         row = cursor.fetchone()
-
         conn.commit()
 
         return {
@@ -102,7 +103,7 @@ def create(company: Company) -> dict[str, Any]:
             "created_at": row[2].isoformat(),
         }
 
-    except:
+    except Exception:
         conn.rollback()
         raise
 
@@ -113,22 +114,24 @@ def create(company: Company) -> dict[str, Any]:
             conn.close()
 
 
-def delete(company_id: int):
+def delete(company_id: int, user_id: str) -> dict[str, Any] | None:
     conn = db_connection()
     cursor = conn.cursor()
 
     try:
-        # Delete company from database
         cursor.execute(
             """
-            DELETE FROM companies WHERE id = %s
+            DELETE FROM companies
+            WHERE id = %s AND user_id = %s
             RETURNING id, name, created_at
             """,
-            (company_id,),
+            (company_id, user_id),
         )
 
         row = cursor.fetchone()
         conn.commit()
+        if not row:
+            return None
 
         return {
             "id": row[0],
@@ -143,7 +146,9 @@ def delete(company_id: int):
             conn.close()
 
 
-def update(changed_fields: dict, company_id: int):
+def update(
+    changed_fields: dict, company_id: int, user_id: str
+) -> dict[str, Any] | None:
     conn = db_connection()
     cursor = conn.cursor()
 
@@ -151,7 +156,6 @@ def update(changed_fields: dict, company_id: int):
     values = []
 
     for col, val in changed_fields.items():
-        # Handle list/jsonb columns
         if col in ("color_palette", "main_competitors", "personality"):
             set_clauses.append(f"{col} = %s::jsonb")
             values.append(json.dumps(val))
@@ -159,21 +163,20 @@ def update(changed_fields: dict, company_id: int):
             set_clauses.append(f"{col} = %s")
             values.append(val)
 
-    set_clauses.append("updated_at = CURRENT_TIMESTAMP")
-    values.append(company_id)
+    values.extend([company_id, user_id])
     query = f"""
         UPDATE companies
         SET {', '.join(set_clauses)}
-        WHERE id = %s
-        RETURNING id, name, updated_at;
+        WHERE id = %s AND user_id = %s
+        RETURNING id, name, created_at;
     """
 
     try:
-        # Update company in database
         cursor.execute(query, tuple(values))
-
         row = cursor.fetchone()
         conn.commit()
+        if not row:
+            return None
 
         return {
             "id": row[0],
@@ -181,7 +184,7 @@ def update(changed_fields: dict, company_id: int):
             "updated_at": row[2].isoformat() if row[2] else None,
         }
 
-    except:
+    except Exception:
         conn.rollback()
         raise
 

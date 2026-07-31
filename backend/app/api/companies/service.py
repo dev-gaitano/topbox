@@ -16,28 +16,25 @@ FIELD_MAP = {
 }
 
 
-def get_companies():
-    return repository.get_all()
+def get_companies(user_id: str):
+    return repository.get_all(user_id)
 
 
-def get_company(id: int):
-    return repository.get_by_id(id)
+def get_company(company_id: int, user_id: str):
+    return repository.get_by_id(company_id, user_id)
 
 
-def create_company(data: dict):
+def create_company(data: dict, user_id: str):
     company = Company.handle_request_data(data)
-
-    return repository.create(company)
-
-
-def delete_company(id: int):
-    company = repository.delete(id)
-
-    return company
+    return repository.create(company, user_id)
 
 
-def update_company(data: dict, id: int):
-    current = repository.get_by_id(id)
+def delete_company(company_id: int, user_id: str):
+    return repository.delete(company_id, user_id)
+
+
+def update_company(data: dict, company_id: int, user_id: str):
+    current = repository.get_by_id(company_id, user_id)
 
     if not current:
         return None
@@ -47,13 +44,11 @@ def update_company(data: dict, id: int):
     for key, new_val in data.items():
         db_col = FIELD_MAP.get(key)
 
-        # ignore unknown fields
         if not db_col:
             continue
 
         old_val = current.get(db_col)
 
-        # Check what changed
         if new_val != old_val:
             changed[db_col] = new_val
 
@@ -64,4 +59,4 @@ def update_company(data: dict, id: int):
             "updated_at": current.get("updated_at"),
         }
 
-    return repository.update(changed, id)
+    return repository.update(changed, company_id, user_id)
