@@ -16,13 +16,18 @@ def decode_jwt(token: str, secret: str) -> dict[str, Any]:
 
 
 def generate_access_token(
-    user_id: str, email: str, secret_key: str, expires_in_minutes: int = 15
+    user_id: str,
+    email: str,
+    secret_key: str,
+    session_id: int,
+    expires_in_minutes: int = 15,
 ) -> str:
     now = datetime.now(timezone.utc)
     exp = now + timedelta(minutes=expires_in_minutes)
     payload = {
         "sub": str(user_id),
         "email": email,
+        "sid": session_id,
         "iat": now,
         "exp": exp,
         "type": "access",
@@ -46,6 +51,8 @@ def verify_access_token(token: str, secret_key: str) -> dict[str, Any]:
     if payload.get("type") != "access":
         raise TokenError("Invalid token type")
     if not payload.get("sub"):
+        raise TokenError("Invalid token payload")
+    if payload.get("sid") is None:
         raise TokenError("Invalid token payload")
 
     return payload

@@ -134,6 +134,30 @@ def create_session(
             conn.close()
 
 
+def find_session_by_id(session_id: int) -> dict[str, Any] | None:
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT id, user_id, refresh_token_hash, created_at, expires_at, revoked_at
+            FROM sessions
+            WHERE id = %s;
+            """,
+            (session_id,),
+        )
+        row = cursor.fetchone()
+        if not row:
+            return None
+        return _session_from_row(row)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 def find_session_by_refresh_token(refresh_token_hash: str) -> dict[str, Any] | None:
     conn = db_connection()
     cursor = conn.cursor()

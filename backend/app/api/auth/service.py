@@ -70,23 +70,24 @@ def issue_tokens(
     access_token_expires = int(current_app.config["ACCESS_TOKEN_EXPIRES_MINUTES"])
     refresh_token_expires_days = int(current_app.config["REFRESH_TOKEN_EXPIRES_DAYS"])
 
-    access_token = generate_access_token(
-        user_id=user_id,
-        email=email,
-        secret_key=secret_key,
-        expires_in_minutes=access_token_expires,
-    )
-
     refresh_token = secrets.token_urlsafe(32)
     refresh_token_hash = hashlib.sha256(refresh_token.encode("utf-8")).hexdigest()
     expires_at = datetime.now(timezone.utc) + timedelta(days=refresh_token_expires_days)
 
-    repository.create_session(
+    session = repository.create_session(
         user_id=user_id,
         refresh_token_hash=refresh_token_hash,
         expires_at=expires_at,
         user_agent=user_agent,
         ip_address=ip_address,
+    )
+
+    access_token = generate_access_token(
+        user_id=user_id,
+        email=email,
+        secret_key=secret_key,
+        session_id=session["id"],
+        expires_in_minutes=access_token_expires,
     )
 
     return {"access_token": access_token, "refresh_token": refresh_token}
