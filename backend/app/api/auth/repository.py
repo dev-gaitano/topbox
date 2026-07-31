@@ -83,6 +83,25 @@ def find_user_by_email(email: str) -> dict[str, Any] | None:
             conn.close()
 
 
+def _session_from_row(row: tuple) -> dict[str, Any]:
+    return {
+        "id": row[0],
+        "user_id": str(row[1]),
+        "refresh_token_hash": row[2],
+        "created_at": (
+            row[3].isoformat() if hasattr(row[3], "isoformat") else str(row[3])
+        ),
+        "expires_at": (
+            row[4].isoformat() if hasattr(row[4], "isoformat") else str(row[4])
+        ),
+        "revoked_at": (
+            row[5].isoformat()
+            if row[5] is not None and hasattr(row[5], "isoformat")
+            else row[5]
+        ),
+    }
+
+
 def create_session(
     user_id: str,
     refresh_token_hash: str,
@@ -98,27 +117,126 @@ def create_session(
             """
             INSERT INTO sessions (user_id, refresh_token_hash, expires_at, user_agent, ip_address)
             VALUES (%s, %s, %s, %s, %s)
-            RETURNING id, user_id, refresh_token_hash, created_at, expires_at;
+            RETURNING id, user_id, refresh_token_hash, created_at, expires_at, revoked_at;
             """,
             (user_id, refresh_token_hash, expires_at, user_agent, ip_address),
         )
         row = cursor.fetchone()
         conn.commit()
-
-        return {
-            "id": row[0],
-            "user_id": str(row[1]),
-            "refresh_token_hash": row[2],
-            "created_at": (
-                row[3].isoformat() if hasattr(row[3], "isoformat") else str(row[3])
-            ),
-            "expires_at": (
-                row[4].isoformat() if hasattr(row[4], "isoformat") else str(row[4])
-            ),
-        }
+        return _session_from_row(row)
     except Exception:
         conn.rollback()
         raise
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def find_session_by_id(session_id: int) -> dict[str, Any] | None:
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT id, user_id, refresh_token_hash, created_at, expires_at, revoked_at
+            FROM sessions
+            WHERE id = %s;
+            """,
+            (session_id,),
+        )
+        row = cursor.fetchone()
+        if not row:
+            return None
+        return _session_from_row(row)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def find_session_by_refresh_token(refresh_token_hash: str) -> dict[str, Any] | None:
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT id, user_id, refresh_token_hash, created_at, expires_at, revoked_at
+            FROM sessions
+            WHERE refresh_token_hash = %s;
+            """,
+            (refresh_token_hash,),
+        )
+        row = cursor.fetchone()
+        if not row:
+            return None
+        return _session_from_row(row)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def revoke_session(session_id: int) -> dict[str, Any] | None:
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            UPDATE sessions
+            SET revoked_at = now()
+            WHERE id = %s AND revoked_at IS NULL
+            RETURNING id, user_id, refresh_token_hash, created_at, expires_at, revoked_at;
+            """,
+            (session_id,),
+        )
+        row = cursor.fetchone()
+        conn.commit()
+        if not row:
+            return None
+        return _session_from_row(row)
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def find_user_by_id(user_id: str) -> dict[str, Any] | None:
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT id, username, email, password_hash, created_at
+            FROM users
+            WHERE id = %s;
+            """,
+            (user_id,),
+        )
+        row = cursor.fetchone()
+        if not row:
+            return None
+
+        return {
+            "id": str(row[0]),
+            "username": row[1],
+            "email": row[2],
+            "password_hash": row[3],
+            "created_at": (
+                row[4].isoformat() if hasattr(row[4], "isoformat") else str(row[4])
+            ),
+        }
     finally:
         if cursor:
             cursor.close()
