@@ -58,6 +58,40 @@ def check_password(plain_password: str, password_hash: str) -> bool:
         return False
 
 
+def issue_tokens(
+    user_id: str,
+    email: str,
+    user_agent: str | None = None,
+    ip_address: str | None = None,
+) -> dict:
+    """Create an access/refresh token pair and persist the session.
+    Shared by login now, and by refresh later."""
+    secret_key = current_app.config["JWT_SECRET_KEY"]
+    access_token_expires = int(current_app.config["ACCESS_TOKEN_EXPIRES_MINUTES"])
+    refresh_token_expires_days = int(current_app.config["REFRESH_TOKEN_EXPIRES_DAYS"])
+
+    access_token = generate_access_token(
+        user_id=user_id,
+        email=email,
+        secret_key=secret_key,
+        expires_in_minutes=access_token_expires,
+    )
+
+    refresh_token = secrets.token_urlsafe(32)
+    refresh_token_hash = hashlib.sha256(refresh_token.encode("utf-8")).hexdigest()
+    expires_at = datetime.now(timezone.utc) + timedelta(days=refresh_token_expires_days)
+
+    repository.create_session(
+        user_id=user_id,
+        refresh_token_hash=refresh_token_hash,
+        expires_at=expires_at,
+        user_agent=user_agent,
+        ip_address=ip_address,
+    )
+
+    return {"access_token": access_token, "refresh_token": refresh_token}
+
+
 def handle_login(
     email: str,
     password: str,
@@ -69,44 +103,21 @@ def handle_login(
     if not password:
         raise ValidationError("Password is required")
 
-    # Check if user exists
     user = repository.find_user_by_email(email.strip().lower())
-
     if not user:
         raise AuthenticationError("Invalid email or password")
-
     if not check_password(password, user["password_hash"]):
         raise AuthenticationError("Invalid email or password")
 
-    # Generate access and refresh tokens
-    secret_key = current_app.config["JWT_SECRET_KEY"]
-    access_token_expires = int(current_app.config["ACCESS_TOKEN_EXPIRES_MINUTES"])
-    refresh_token_expires_days = int(current_app.config["REFRESH_TOKEN_EXPIRES_DAYS"])
-
-    access_token = generate_access_token(
+    tokens = issue_tokens(
         user_id=user["id"],
         email=user["email"],
-        secret_key=secret_key,
-        expires_in_minutes=access_token_expires,
-    )
-
-    refresh_token = secrets.token_urlsafe(32)
-    refresh_token_hash = hashlib.sha256(refresh_token.encode("utf-8")).hexdigest()
-
-    expires_at = datetime.now(timezone.utc) + timedelta(days=refresh_token_expires_days)
-
-    # Create user session
-    repository.create_session(
-        user_id=user["id"],
-        refresh_token_hash=refresh_token_hash,
-        expires_at=expires_at,
         user_agent=user_agent,
         ip_address=ip_address,
     )
 
     return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
+        **tokens,
         "user": {
             "id": user["id"],
             "username": user["username"],
