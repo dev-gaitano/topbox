@@ -64,8 +64,6 @@ def issue_tokens(
     user_agent: str | None = None,
     ip_address: str | None = None,
 ) -> dict:
-    """Create an access/refresh token pair and persist the session.
-    Shared by login now, and by refresh later."""
     secret_key = current_app.config["JWT_SECRET_KEY"]
     access_token_expires = int(current_app.config["ACCESS_TOKEN_EXPIRES_MINUTES"])
     refresh_token_expires_days = int(current_app.config["REFRESH_TOKEN_EXPIRES_DAYS"])
