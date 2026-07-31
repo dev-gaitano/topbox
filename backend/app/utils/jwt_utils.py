@@ -3,6 +3,10 @@ from typing import Any
 import jwt
 
 
+class TokenError(Exception):
+    pass
+
+
 def encode_jwt(payload: dict[str, Any], secret: str) -> str:
     return jwt.encode(payload, secret, algorithm="HS256")
 
@@ -24,3 +28,24 @@ def generate_access_token(
         "type": "access",
     }
     return encode_jwt(payload, secret_key)
+
+
+def verify_access_token(token: str, secret_key: str) -> dict[str, Any]:
+    if not token or not secret_key:
+        raise TokenError("Missing token or secret key")
+
+    try:
+        payload = decode_jwt(token, secret_key)
+    except jwt.ExpiredSignatureError as e:
+        raise TokenError("Token has expired") from e
+    except jwt.InvalidSignatureError as e:
+        raise TokenError("Invalid token signature") from e
+    except jwt.InvalidTokenError as e:
+        raise TokenError("Invalid token") from e
+
+    if payload.get("type") != "access":
+        raise TokenError("Invalid token type")
+    if not payload.get("sub"):
+        raise TokenError("Invalid token payload")
+
+    return payload
