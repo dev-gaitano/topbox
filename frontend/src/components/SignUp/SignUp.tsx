@@ -141,7 +141,6 @@ export default function SignUp() {
                 <input
                   id="username"
                   name="username"
-                  type="text"
                   autoComplete="name"
                   placeholder="Zawadi"
                   value={form.username}
@@ -169,9 +168,9 @@ export default function SignUp() {
                 <input
                   id="email"
                   name="email"
-                  type="email"
                   autoComplete="email"
                   placeholder="zawadi@company.com"
+                  type="email"
                   value={form.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -202,6 +201,7 @@ export default function SignUp() {
                     name="password"
                     autoComplete="new-password"
                     placeholder="At least 8 characters"
+                    type="password"
                     value={form.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -230,6 +230,7 @@ export default function SignUp() {
                   name="confirmPassword"
                   autoComplete="new-password"
                   placeholder="Type it again"
+                  type="password"
                   value={form.confirmPassword}
                   onChange={handleChange}
                   onBlur={handleBlur}

@@ -126,9 +126,9 @@ export default function LogIn() {
               <input
                 id="email"
                 name="email"
-                type="email"
                 autoComplete="email"
                 placeholder="zawadi@company.com"
+                type="email"
                 value={form.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -157,6 +157,7 @@ export default function LogIn() {
                   name="password"
                   autoComplete="current-password"
                   placeholder="Enter password"
+                  type="password"
                   value={form.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
