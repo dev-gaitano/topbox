@@ -120,68 +120,81 @@ function CompanyUpdateForm({
             placeholder="Company name"
             value={formData.businessName}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="logo"
             placeholder="Logo"
             value={formData.logo}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="industry"
             value={formData.industry}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="email"
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
+            className="input-primary"
           />
           <textarea
             name="description"
             placeholder="Description"
             value={formData.description}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="targetAudience"
             placeholder="targetAudience"
             value={formData.targetAudience}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="colorPalette"
             placeholder="Color palette"
             value={formData.colorPalette}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="uniqueValue"
             placeholder="Unique value"
             value={formData.uniqueValue}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="mainCompetitors"
             placeholder="Main competitors"
             value={formData.mainCompetitors}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="personality"
             placeholder="Brand personality"
             value={formData.personality}
             onChange={handleChange}
+            className="input-primary"
           />
           <input
             name="tone"
             placeholder="Brand tone"
             value={formData.tone}
             onChange={handleChange}
+            className="input-primary"
           />
         </div>
-        <button type="submit">Update company</button>
+        <button className="btn-primary" type="submit">
+          Update company
+        </button>
       </form>
     </div>
   );
