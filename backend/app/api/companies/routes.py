@@ -1,6 +1,7 @@
 from typing import Any
-from flask import Blueprint, Response, request, jsonify
+from flask import Blueprint, Response, g, request, jsonify
 
+from app.utils.decorators import require_auth
 from .service import (
     delete_company,
     get_companies,
@@ -13,10 +14,10 @@ companies_bp = Blueprint("companies", __name__)
 
 
 @companies_bp.get("")
+@require_auth
 def get_companies_route() -> tuple[Response, int]:
     try:
-        companies = get_companies()
-
+        companies = get_companies(g.current_user_id)
         return jsonify(companies), 200
 
     except Exception as e:
@@ -33,9 +34,10 @@ def get_companies_route() -> tuple[Response, int]:
 
 
 @companies_bp.get("/<int:company_id>")
+@require_auth
 def get_company_route(company_id: int) -> tuple[Response, int]:
     try:
-        company = get_company(company_id)
+        company = get_company(company_id, g.current_user_id)
         if not company:
             return jsonify({"success": False, "message": "Company not found"}), 404
 
@@ -55,6 +57,7 @@ def get_company_route(company_id: int) -> tuple[Response, int]:
 
 
 @companies_bp.post("")
+@require_auth
 def create_company_route() -> tuple[Response, int]:
     try:
         payload = request.get_json(silent=True)
@@ -62,7 +65,7 @@ def create_company_route() -> tuple[Response, int]:
         if not payload:
             return jsonify({"success": False, "message": "No JSON data provided"}), 400
 
-        company = create_company(payload)
+        company = create_company(payload, g.current_user_id)
 
         return (
             jsonify(
@@ -89,9 +92,12 @@ def create_company_route() -> tuple[Response, int]:
 
 
 @companies_bp.delete("/<int:company_id>")
+@require_auth
 def delete_company_route(company_id: int) -> tuple[Response, int]:
     try:
-        company = delete_company(company_id)
+        company = delete_company(company_id, g.current_user_id)
+        if not company:
+            return jsonify({"success": False, "message": "Company not found"}), 404
 
         return jsonify(company), 200
 
@@ -109,15 +115,17 @@ def delete_company_route(company_id: int) -> tuple[Response, int]:
 
 
 @companies_bp.patch("/<int:company_id>")
+@require_auth
 def update_company_route(company_id: int) -> tuple[Response, int]:
     try:
-        # Get data from input
         payload: dict[str, Any] | None = request.get_json(silent=True)
 
         if not payload:
             return jsonify({"success": False, "message": "No JSON data provided"}), 400
 
-        company = update_company(payload, company_id)
+        company = update_company(payload, company_id, g.current_user_id)
+        if not company:
+            return jsonify({"success": False, "message": "Company not found"}), 404
 
         return jsonify(company), 200
 
