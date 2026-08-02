@@ -2,6 +2,7 @@ import { Company } from "../../../props";
 import "./CompanyUpdateForm.css";
 
 import { useState, useEffect } from "react";
+import { authHeaders } from "../../../utils/auth";
 
 function CompanyUpdateForm({
   companyUpdateForm,
@@ -53,9 +54,7 @@ function CompanyUpdateForm({
       // Post to endpoint
       const res = await fetch(`${API_BASE}/api/companies/${companyId}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(formData),
       });
 

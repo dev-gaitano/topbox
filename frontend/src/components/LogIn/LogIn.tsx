@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, FormEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { FormErrors, LogInFormState } from "../../props";
+import { setAuthSession } from "../../utils/auth";
 import SuccessToast from "../ui/SuccessToast/SuccessToast";
 import "./LogIn.css";
 
@@ -90,6 +91,12 @@ export default function LogIn() {
         setApiError(data.message || "Failed to login to account.");
         return;
       }
+
+      setAuthSession({
+        accessToken: data.data.access_token,
+        refreshToken: data.data.refresh_token,
+        username: data.data.user?.username,
+      });
 
       setIsSuccess(true);
     } catch (err) {
