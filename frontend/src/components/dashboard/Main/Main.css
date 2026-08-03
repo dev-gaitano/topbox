@@ -1,3 +1,20 @@
 .main-content {
   display: flex;
 }
+
+/* On desktop all panels are always visible */
+.main-tab-panel {
+  display: contents;
+}
+
+/* On mobile only the active panel shows */
+@media (max-width: 768px) {
+  .main-tab-panel {
+    display: none;
+    width: 100%;
+  }
+
+  .main-tab-panel--visible {
+    display: block;
+  }
+}

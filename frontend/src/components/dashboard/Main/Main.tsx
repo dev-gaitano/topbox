@@ -11,18 +11,32 @@ import { Company } from "../../../props";
 // Modules
 import { useState } from "react";
 
-function Main() {
+// Types
+import { Tab } from "../MobileNav/MobileNav";
+
+interface MainProps {
+  activeTab: Tab;
+}
+
+function Main({ activeTab }: MainProps) {
   // Define state variable to manage state of selected company
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
   return (
     <main className="section main-section">
+      {/* Always visible */}
       <CompanySelection
         selectedCompany={selectedCompany}
         onSelectCompany={setSelectedCompany}
       />
-      <BrandPlaybook selectedCompany={selectedCompany} />
-      <ContentManagement />
+
+      {/* Tab-switched on mobile, always visible on desktop */}
+      <div className={`main-tab-panel${activeTab === "playbook" ? " main-tab-panel--visible" : ""}`}>
+        <BrandPlaybook selectedCompany={selectedCompany} />
+      </div>
+      <div className={`main-tab-panel${activeTab === "content" ? " main-tab-panel--visible" : ""}`}>
+        <ContentManagement />
+      </div>
     </main>
   );
 }
