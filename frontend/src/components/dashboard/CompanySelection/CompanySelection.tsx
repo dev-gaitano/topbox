@@ -8,6 +8,7 @@ import { Company } from "../../../props";
 import { CompanySelectionProps } from "../../../props";
 import { useEffect, useState } from "react";
 import CompanyUpdateForm from "../CompanyUpdateForm/CompanyUpdateForm";
+import { authHeaders } from "../../../utils/auth";
 
 // Destructure interface to get keys as function parameters
 function CompanySelection({
@@ -30,6 +31,7 @@ function CompanySelection({
     try {
       const res = await fetch(
         `${API_BASE}/api/companies/${selectedCompany.id}`,
+        { headers: authHeaders() },
       );
       const resJson = await res.json();
 
@@ -54,7 +56,9 @@ function CompanySelection({
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/companies`);
+        const res = await fetch(`${API_BASE}/api/companies`, {
+          headers: authHeaders(),
+        });
         if (res.ok) {
           const resJson = await res.json();
           setCompanies(resJson);
@@ -76,9 +80,7 @@ function CompanySelection({
     try {
       const res = await fetch(`${API_BASE}/api/companies/${companyId}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: authHeaders({ "Content-Type": "application/json" }),
       });
 
       const data = await res.json();

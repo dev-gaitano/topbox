@@ -2,6 +2,7 @@ import "./NewCompanyForm.css";
 
 // Modules
 import { useState } from "react";
+import { authHeaders } from "../../../utils/auth";
 
 function NewCompanyForm({
   newCompanyForm,
@@ -34,9 +35,7 @@ function NewCompanyForm({
       // Post to endpoint
       const res = await fetch(`${API_BASE}/api/companies`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(formData),
       });
 

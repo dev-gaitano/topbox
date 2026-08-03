@@ -70,10 +70,6 @@
   gap: 6px;
 }
 
-.input-primary {
-  width: 320px;
-}
-
 .signup-input--error {
   border-color: var(--error);
 }

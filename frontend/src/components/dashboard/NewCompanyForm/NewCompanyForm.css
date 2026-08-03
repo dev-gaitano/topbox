@@ -37,3 +37,11 @@
   flex-direction: column;
   gap: 16px;
 }
+
+.ncf-input-container input {
+  width: 100%;
+}
+
+.ncf-input-container textarea {
+  width: 100%;
+}

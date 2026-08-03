@@ -1,6 +1,8 @@
 import "./Header.css"
+import { getUsername } from "../../../utils/auth";
 
 function Header() {
+  const username = getUsername() ?? "User";
   return (
     <header className="section header-section">
       <div className="brand-container">
@@ -11,7 +13,7 @@ function Header() {
         <div className="user-content">
           <div className="user-details">
             <p className="user-role">Admin</p>
-            <p className="user-name">April Baker</p>
+            <p className="user-name">{username}</p>
           </div>
           <div className="pfp-wrapper">
             <img src="https://res.cloudinary.com/diwkfbsgv/image/upload/v1775313572/pfp-02_ouryex.jpg" alt="pfp" />

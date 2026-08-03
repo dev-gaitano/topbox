@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, FormEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { FormErrors, LogInFormState } from "../../props";
+import { setAuthSession } from "../../utils/auth";
 import SuccessToast from "../ui/SuccessToast/SuccessToast";
 import "./LogIn.css";
 
@@ -91,6 +92,12 @@ export default function LogIn() {
         return;
       }
 
+      setAuthSession({
+        accessToken: data.data.access_token,
+        refreshToken: data.data.refresh_token,
+        username: data.data.user?.username,
+      });
+
       setIsSuccess(true);
     } catch (err) {
       setApiError("Network error. Please try again.");
@@ -126,9 +133,9 @@ export default function LogIn() {
               <input
                 id="email"
                 name="email"
-                type="email"
                 autoComplete="email"
                 placeholder="zawadi@company.com"
+                type="email"
                 value={form.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -157,6 +164,7 @@ export default function LogIn() {
                   name="password"
                   autoComplete="current-password"
                   placeholder="Enter password"
+                  type="password"
                   value={form.password}
                   onChange={handleChange}
                   onBlur={handleBlur}

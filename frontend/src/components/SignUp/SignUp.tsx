@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, FormEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { SignUpFormState, FormErrors } from "../../props";
+import { setAuthSession } from "../../utils/auth";
 import SuccessToast from "../ui/SuccessToast/SuccessToast";
 import "./SignUp.css";
 
@@ -105,6 +106,24 @@ export default function SignUp() {
         return;
       }
 
+      // Auto-login to obtain tokens immediately after signup
+      const loginResponse = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      });
+      const loginData = await loginResponse.json();
+      if (loginResponse.ok && loginData.success) {
+        setAuthSession({
+          accessToken: loginData.data.access_token,
+          refreshToken: loginData.data.refresh_token,
+          username: loginData.data.user?.username,
+        });
+      }
+
       setIsSuccess(true);
     } catch (err) {
       setApiError("Network error. Please try again.");
@@ -141,9 +160,8 @@ export default function SignUp() {
                 <input
                   id="username"
                   name="username"
-                  type="text"
                   autoComplete="name"
-                  placeholder="Zawadi"
+                  placeholder="zawadi"
                   value={form.username}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -169,9 +187,9 @@ export default function SignUp() {
                 <input
                   id="email"
                   name="email"
-                  type="email"
                   autoComplete="email"
                   placeholder="zawadi@company.com"
+                  type="email"
                   value={form.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -201,7 +219,8 @@ export default function SignUp() {
                     id="password"
                     name="password"
                     autoComplete="new-password"
-                    placeholder="At least 8 characters"
+                    placeholder="Password"
+                    type="password"
                     value={form.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -229,7 +248,8 @@ export default function SignUp() {
                   id="confirmPassword"
                   name="confirmPassword"
                   autoComplete="new-password"
-                  placeholder="Type it again"
+                  placeholder="Confirm password"
+                  type="password"
                   value={form.confirmPassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
