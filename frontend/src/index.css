@@ -245,6 +245,11 @@ button {
     font-size: 13px;
   }
 
+  .component.brand-playbook,
+  .component.content-management {
+    padding: 0 0 80px;
+  }
+
   .btn-secondary p,
   .btn-primary p {
     font-size: 13px;

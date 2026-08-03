@@ -1,9 +1,12 @@
 import Header from "../components/dashboard/Header/Header";
 import Main from "../components/dashboard/Main/Main";
-import Footer from "../components/dashboard/Footer/Footer";
+import MobileNav, { Tab } from "../components/dashboard/MobileNav/MobileNav";
 import { Analytics } from "@vercel/analytics/react";
+import { useState } from "react";
 
 function DashboardPage() {
+  const [activeTab, setActiveTab] = useState<Tab>("playbook");
+
   return (
     <div>
       <div className="root-container">
@@ -24,9 +27,9 @@ function DashboardPage() {
           />
         ))}
         <Header />
-        <Main />
-        <Footer />
+        <Main activeTab={activeTab} />
       </div>
+      <MobileNav activeTab={activeTab} onTabChange={setActiveTab} />
       <Analytics />
     </div>
   );
