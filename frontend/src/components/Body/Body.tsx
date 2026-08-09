@@ -1,4 +1,4 @@
-import "./Main.css";
+import "./Body.css";
 
 // Components
 import CompanySelection from "../CompanySelection/CompanySelection";
@@ -6,7 +6,7 @@ import BrandPlaybook from "../BrandPlaybook/BrandPlaybook";
 import ContentManagement from "../ContentManagement/ContentManagement";
 
 // Props
-import { Company } from "../../../props";
+import { Company } from "../../props";
 
 // Modules
 import { useState } from "react";
@@ -18,7 +18,7 @@ interface MainProps {
   activeTab: Tab;
 }
 
-function Main({ activeTab }: MainProps) {
+function Body({ activeTab }: MainProps) {
   // Define state variable to manage state of selected company
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
@@ -31,14 +31,18 @@ function Main({ activeTab }: MainProps) {
       />
 
       {/* Tab-switched on mobile, always visible on desktop */}
-      <div className={`main-tab-panel${activeTab === "playbook" ? " main-tab-panel--visible" : ""}`}>
+      <div
+        className={`main-tab-panel${activeTab === "playbook" ? " main-tab-panel--visible" : ""}`}
+      >
         <BrandPlaybook selectedCompany={selectedCompany} />
       </div>
-      <div className={`main-tab-panel${activeTab === "content" ? " main-tab-panel--visible" : ""}`}>
+      <div
+        className={`main-tab-panel${activeTab === "content" ? " main-tab-panel--visible" : ""}`}
+      >
         <ContentManagement />
       </div>
     </main>
   );
 }
 
-export default Main;
+export default Body;

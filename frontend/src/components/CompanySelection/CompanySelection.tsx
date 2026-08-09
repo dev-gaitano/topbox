@@ -4,11 +4,12 @@ import "./CompanySelection.css";
 import NewCompanyForm from "../NewCompanyForm/NewCompanyForm";
 
 // Props
-import { Company } from "../../../props";
-import { CompanySelectionProps } from "../../../props";
-import { useEffect, useState } from "react";
+import { Company } from "../../props";
+import { CompanySelectionProps } from "../../props";
+import { useEffect, useState, useCallback } from "react";
 import CompanyUpdateForm from "../CompanyUpdateForm/CompanyUpdateForm";
-import { authHeaders } from "../../../utils/auth";
+import { authHeaders } from "../../utils/auth";
+import SuccessToast from "../ui/SuccessToast/SuccessToast";
 
 // Destructure interface to get keys as function parameters
 function CompanySelection({
@@ -22,6 +23,33 @@ function CompanySelection({
   const [isHoveredId, setIsHoveredId] = useState<number | null>(null);
   const [companyUpdateForm, setCompanyUpdateForm] = useState(false);
   const [company, setCompany] = useState<Company | null>(null);
+  const [toastInfo, setToastInfo] = useState<{
+    title: string;
+    subtext: string;
+  } | null>(null);
+
+  const fetchCompanies = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/companies`, {
+        headers: authHeaders(),
+      });
+      if (res.ok) {
+        const resJson = await res.json();
+        setCompanies(resJson);
+      } else {
+        console.error("Failed to fetch companies");
+        console.log(res);
+      }
+    } catch (e) {
+      console.error("Error fetching companies:", e);
+      setCompanies([]);
+    }
+  }, [API_BASE]);
+
+  // Fetch companies from api
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
 
   function handleNewCompany() {
     setNewCompanyForm(true);
@@ -51,30 +79,6 @@ function CompanySelection({
       setCompany(selectedCompany);
     }
   }
-
-  // Fetch companies from api
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/companies`, {
-          headers: authHeaders(),
-        });
-        if (res.ok) {
-          const resJson = await res.json();
-          setCompanies(resJson);
-        } else {
-          console.error("Failed to fetch companies");
-          console.log(res);
-        }
-      } catch (e) {
-        console.error("Error fetching companies:", e);
-        setCompanies([]);
-      }
-    };
-
-    // useEffect doesn't take async fn as callback
-    fetchCompanies();
-  }, []);
 
   async function handleDelete(companyId: number) {
     try {
@@ -200,12 +204,37 @@ function CompanySelection({
       <NewCompanyForm
         newCompanyForm={newCompanyForm}
         setNewCompanyForm={setNewCompanyForm}
+        onSuccess={() => {
+          setNewCompanyForm(false);
+          fetchCompanies();
+          setToastInfo({
+            title: "Company created!",
+            subtext: "Successfully added company.",
+          });
+          setTimeout(() => setToastInfo(null), 1600);
+        }}
       />
       <CompanyUpdateForm
         companyUpdateForm={companyUpdateForm}
         setCompanyUpdateForm={setCompanyUpdateForm}
         company={company}
+        onSuccess={() => {
+          setCompanyUpdateForm(false);
+          fetchCompanies();
+          setToastInfo({
+            title: "Company updated!",
+            subtext: "Successfully saved changes.",
+          });
+          setTimeout(() => setToastInfo(null), 1600);
+        }}
       />
+      {toastInfo && (
+        <SuccessToast
+          title={toastInfo.title}
+          subtext={toastInfo.subtext}
+          success="green"
+        />
+      )}
     </section>
   );
 }

@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://topbox-prod-6foe.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
     }
   ]
 }
