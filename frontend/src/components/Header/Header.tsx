@@ -1,5 +1,5 @@
 import "./Header.css";
-import { getUsername } from "../../../utils/auth";
+import { getUsername } from "../../utils/auth";
 import { useState, useEffect } from "react";
 
 function Header() {

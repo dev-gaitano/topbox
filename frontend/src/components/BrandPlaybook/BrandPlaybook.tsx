@@ -1,7 +1,7 @@
 import "./BrandPlaybook.css";
 
 // Props
-import { CompanySelectionProps } from "../../../props";
+import { CompanySelectionProps } from "../../props";
 
 // Modules
 import { useState, useEffect } from "react";

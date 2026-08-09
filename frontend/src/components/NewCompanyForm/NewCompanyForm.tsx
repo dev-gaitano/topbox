@@ -2,8 +2,8 @@ import "./NewCompanyForm.css";
 
 // Modules
 import { useState, useMemo, FormEvent, ChangeEvent } from "react";
-import { authHeaders } from "../../../utils/auth";
-import ColorPalettePicker from "../../ui/ColorPalettePicker/ColorPalettePicker";
+import { authHeaders } from "../../utils/auth";
+import ColorPalettePicker from "../ui/ColorPalettePicker/ColorPalettePicker";
 
 type FormState = {
   businessName: string;

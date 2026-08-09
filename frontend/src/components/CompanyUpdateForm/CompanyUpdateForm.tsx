@@ -1,9 +1,9 @@
-import { Company } from "../../../props";
+import { Company } from "../../props";
 import "./CompanyUpdateForm.css";
 
 import { useState, useEffect, useMemo, ChangeEvent } from "react";
-import { authHeaders } from "../../../utils/auth";
-import ColorPalettePicker from "../../ui/ColorPalettePicker/ColorPalettePicker";
+import { authHeaders } from "../../utils/auth";
+import ColorPalettePicker from "../ui/ColorPalettePicker/ColorPalettePicker";
 
 type FormState = {
   businessName: string;

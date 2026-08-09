@@ -4,12 +4,12 @@ import "./CompanySelection.css";
 import NewCompanyForm from "../NewCompanyForm/NewCompanyForm";
 
 // Props
-import { Company } from "../../../props";
-import { CompanySelectionProps } from "../../../props";
+import { Company } from "../../props";
+import { CompanySelectionProps } from "../../props";
 import { useEffect, useState, useCallback } from "react";
 import CompanyUpdateForm from "../CompanyUpdateForm/CompanyUpdateForm";
-import { authHeaders } from "../../../utils/auth";
-import SuccessToast from "../../ui/SuccessToast/SuccessToast";
+import { authHeaders } from "../../utils/auth";
+import SuccessToast from "../ui/SuccessToast/SuccessToast";
 
 // Destructure interface to get keys as function parameters
 function CompanySelection({
@@ -23,7 +23,10 @@ function CompanySelection({
   const [isHoveredId, setIsHoveredId] = useState<number | null>(null);
   const [companyUpdateForm, setCompanyUpdateForm] = useState(false);
   const [company, setCompany] = useState<Company | null>(null);
-  const [toastInfo, setToastInfo] = useState<{title: string, subtext: string} | null>(null);
+  const [toastInfo, setToastInfo] = useState<{
+    title: string;
+    subtext: string;
+  } | null>(null);
 
   const fetchCompanies = useCallback(async () => {
     try {
@@ -204,7 +207,10 @@ function CompanySelection({
         onSuccess={() => {
           setNewCompanyForm(false);
           fetchCompanies();
-          setToastInfo({ title: "Company created!", subtext: "Successfully added company." });
+          setToastInfo({
+            title: "Company created!",
+            subtext: "Successfully added company.",
+          });
           setTimeout(() => setToastInfo(null), 1600);
         }}
       />
@@ -215,7 +221,10 @@ function CompanySelection({
         onSuccess={() => {
           setCompanyUpdateForm(false);
           fetchCompanies();
-          setToastInfo({ title: "Company updated!", subtext: "Successfully saved changes." });
+          setToastInfo({
+            title: "Company updated!",
+            subtext: "Successfully saved changes.",
+          });
           setTimeout(() => setToastInfo(null), 1600);
         }}
       />
